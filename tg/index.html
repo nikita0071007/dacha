@@ -1856,7 +1856,7 @@ function applyCloud(json){
 function setNoRewarded(off){ document.body.classList.toggle('no-rv', !!off); }
 /* ================= TELEGRAM ================= */
 /* НАСТРОЙКИ (заполняет Никита): */
-const TG_PAY_SERVER = '';      // адрес сервера бота, который создаёт счёт в Stars: GET {сервер}/invoice?item=ID → {"link": "..."}
+const TG_PAY_SERVER = 'https://babushkina-dacha.www-636390.workers.dev';      // адрес сервера бота, который создаёт счёт в Stars: GET {сервер}/invoice?item=ID → {"link": "..."}
 const ADSGRAM_BLOCK_ID = '';   // ID рекламного блока Adsgram (reward). Пусто — кнопки рекламы скрыты
 const STARS = {29: 20, 39: 25, 49: 35, 79: 50, 99: 65, 149: 100, 299: 200};
 function priceLabel(rub){ const n = STARS[rub] || Math.round(rub / 1.5); return n + ' ⭐ Stars'; }
