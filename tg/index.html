@@ -1858,17 +1858,22 @@ function setNoRewarded(off){ document.body.classList.toggle('no-rv', !!off); }
 /* НАСТРОЙКИ (заполняет Никита): */
 const TG_PAY_SERVER = 'https://babushkina-dacha.www-636390.workers.dev';      // адрес сервера бота, который создаёт счёт в Stars: GET {сервер}/invoice?item=ID → {"link": "..."}
 const ADSGRAM_BLOCK_ID = '';   // ID рекламного блока Adsgram (reward). Пусто — кнопки рекламы скрыты
+const ADSGRAM_INTER_ID = '';   // ID блока Adsgram «между уровнями» (Interstitial). Пусто — реклама между уровнями не показывается
 const STARS = {29: 20, 39: 25, 49: 35, 79: 50, 99: 65, 149: 100, 299: 200};
 function priceLabel(rub){ const n = STARS[rub] || Math.round(rub / 1.5); return n + ' ⭐ Stars'; }
 const TG = window.Telegram && Telegram.WebApp && Telegram.WebApp.initData ? Telegram.WebApp : null;
-let __adsgram = null;
+let __adsgram = null, __adsInter = null;
 const PLATFORM = {
   rewarded: ADSGRAM_BLOCK_ID ? (fin => {
     if (!__adsgram && window.Adsgram) __adsgram = window.Adsgram.init({blockId: ADSGRAM_BLOCK_ID});
     if (!__adsgram) return fin(false);
     __adsgram.show().then(r => fin(!!(r && r.done))).catch(() => fin(false));
   }) : null,
-  inter: null,
+  inter: ADSGRAM_INTER_ID ? (fin => {
+    if (!__adsInter && window.Adsgram) __adsInter = window.Adsgram.init({blockId: ADSGRAM_INTER_ID});
+    if (!__adsInter) return fin();
+    __adsInter.show().then(fin).catch(fin);
+  }) : null,
   pay: TG_PAY_SERVER && TG ? ((p, done) => {
     fetch(TG_PAY_SERVER + '/invoice?item=' + encodeURIComponent(p.id), {headers: {'X-Telegram-Init-Data': TG.initData}})
       .then(r => r.json()).then(d => TG.openInvoice(d.link, st => { if (st === 'paid') done(true); else if (st === 'failed') toast('Оплата не прошла'); }))
