@@ -1866,16 +1866,24 @@ const VOTES = {29: 4, 39: 6, 49: 7, 79: 11, 99: 14, 149: 21, 299: 43};
 function priceLabel(rub){ const n = VOTES[rub] || Math.ceil(rub / 7); return n + ' ' + plural(n, 'голос', 'голоса', 'голосов'); }
 const VKB = window.vkBridge || null;
 const PLATFORM = {
-  rewarded: VKB ? (fin => { VKB.send('VKWebAppShowNativeAds', {ad_format: 'reward', use_waterfall: false}).then(d => fin(!!(d && d.result))).catch(() => fin(false)); }) : null,
-  inter: VKB ? (fin => { VKB.send('VKWebAppShowNativeAds', {ad_format: 'interstitial'}).then(fin).catch(fin); }) : null,
+  rewarded: VKB ? (fin => { VKB.send('VKWebAppShowNativeAds', {ad_format: 'reward', use_waterfall: true}).then(d => { fin(!!(d && d.result)); vkPreload(); }).catch(() => { fin(false); vkPreload(); }); }) : null,
+  inter: VKB ? (fin => { VKB.send('VKWebAppShowNativeAds', {ad_format: 'interstitial'}).then(() => { fin(); vkPreload(); }).catch(() => { fin(); vkPreload(); }); }) : null,
   pay: VKB && VK_PAYMENTS ? ((p, done) => {
     VKB.send('VKWebAppShowOrderBox', {type: 'item', item: p.id}).then(d => done(!!(d && d.success))).catch(() => done(false));
   }) : null,
   cloudSet: VKB ? (json => { if (json.length < 4000) VKB.send('VKWebAppStorageSet', {key: 's', value: json}).catch(() => {}); }) : null
 };
 setNoRewarded(!PLATFORM.rewarded);
+function vkPreload(){
+  if (!VKB) return;
+  setTimeout(() => {
+    VKB.send('VKWebAppCheckNativeAds', {ad_format: 'reward', use_waterfall: true}).catch(() => {});
+    VKB.send('VKWebAppCheckNativeAds', {ad_format: 'interstitial'}).catch(() => {});
+  }, 1500);
+}
 if (VKB) {
   VKB.send('VKWebAppInit').catch(() => {});
+  vkPreload();
   VKB.send('VKWebAppStorageGet', {keys: ['s']}).then(d => { const k = d && d.keys && d.keys[0]; if (k && k.value) applyCloud(k.value); }).catch(() => {});
   try { VKB.subscribe(e => { const t = e && e.detail && e.detail.type; if (t === 'VKWebAppViewHide') adPause(true); if (t === 'VKWebAppViewRestore') adPause(false); }); } catch(e) {}
 }
