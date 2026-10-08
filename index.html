@@ -421,6 +421,11 @@ body{min-height:100vh}html{background:#C3EBA8}@media (prefers-color-scheme:dark)
 #moneyBtn,.demo-note,.mt,body.show-money .mt{display:none!important}
 body.no-rv #claim2,body.no-rv #adMoves,body.no-rv #adLife,body.no-rv #adB,body.no-rv #dbl,body.no-rv #restoreAd{display:none!important}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+
+body:not(.no-pay) #petBtn{display:none}
+#petBtn{background:#FFE6F0;border-color:#F2A6C6;color:#7A1F4A}
+body.no-pay #shopBtn,body.no-pay #buyMoves,body.no-pay #buyLives,body.no-pay .inf-offer,body.no-pay #restorePay,body.no-pay #buyB,body.no-pay #buyPass,body.no-pay .pc.paid,body.no-pay .php,body.no-pay .pass-ok{display:none!important}
+body.no-pay .pass-grid{grid-template-columns:56px 1fr!important}
 </style>
 </head>
 <body>
@@ -479,6 +484,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     <button class="chip" id="musicBtn" aria-label="Музыка">🎵</button>
     <button class="chip" id="soundBtn" aria-label="Звук">🔊</button>
     <button class="chip" id="shopBtn">🛒</button>
+    <button class="chip" id="petBtn" aria-label="Питомцы">🐾</button>
     <button class="chip money" id="moneyBtn" aria-pressed="false" aria-label="Где деньги">💰<span class="lbl"> Где деньги</span></button>
   </div>
 
@@ -1875,6 +1881,36 @@ if (VKB) {
 }
 window.addEventListener('blur', () => { if (!window.__payOpen) adPause(true); });
 window.addEventListener('focus', () => adPause(false));
+
+/* ===== ВК без подключённой оплаты: только реклама, питомцы за звёзды ===== */
+if (!PLATFORM.pay) {
+  document.body.classList.add('no-pay');
+  petPrice = function(){ return S.pets.length ? 10 : 15; };
+  petModal = function(){
+    const price = petPrice();
+    const opt = (k, label) => {
+      const has = S.pets.includes(k);
+      return '<button class="pet-opt' + (has ? ' owned' : '') + '" id="pk_' + k + '"' + (has ? ' disabled' : '') + '><span>' + PETS[k].e + '</span>' + label
+        + (has ? '<small>уже живёт у крыльца ✓</small>' : '<small>⭐ ' + price + '</small>') + '</button>';
+    };
+    const both = S.pets.length >= 2;
+    openModal('<div class="intro-ico">🐾</div><h2>Питомцы бабушки</h2><p>'
+      + (both ? 'У крыльца живут и Мурка, и Шарик. Бабушка счастлива!' : S.pets.length ? 'Второй питомец обойдётся дешевле: пусть у крыльца живут оба.' : 'Питомец будет жить у крыльца рядом с домиком. Его можно взять за звёзды.')
+      + '</p><div class="pet-pick">' + opt('cat', 'Кошка Мурка') + opt('dog', 'Пёс Шарик') + '</div>'
+      + '<button class="btn ghost" id="closeM">' + (both ? 'Закрыть' : 'Не сейчас') + '</button>');
+    $('#sheet').dataset.closable = '1';
+    const choose = k => {
+      if (S.pets.includes(k)) return;
+      if (S.stars < price) { toast('Нужно ещё ⭐ ' + (price - S.stars) + ' — пройдите уровни'); return; }
+      S.stars -= price; S.pets.push(k); S.pet = S.pets[0]; save(); SFX.coin(); closeModal(); renderHeader();
+      pendingLine = S.pets.length === 2 ? 'Теперь и Мурка, и Шарик! Лишь бы не подрались.' : PETS[k].buy;
+      renderHome(); petSound(k);
+    };
+    on('pk_cat', () => choose('cat')); on('pk_dog', () => choose('dog')); on('closeM', closeModal);
+  };
+  PASS.tiers[PASS.tiers.length - 1][0] = {hammer: 1, shuffle: 1, decor: 'leaves'};
+  const pb = $('#petBtn'); if (pb) pb.onclick = () => petModal();
+}
 
 renderHeader(); renderHome();
 </script>
