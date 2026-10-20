@@ -423,7 +423,7 @@ body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
 body:not(.no-pay) #petBtn{display:none}
 #petBtn{background:#FFE6F0;border-color:#F2A6C6;color:#7A1F4A}
-body.no-pay #shopBtn,body.no-pay #buyMoves,body.no-pay #buyLives,body.no-pay .inf-offer,body.no-pay #restorePay,body.no-pay #buyB,body.no-pay #buyPass,body.no-pay .pc.paid,body.no-pay .php,body.no-pay .pass-ok{display:none!important}
+body.no-pay #buyMoves,body.no-pay #buyLives,body.no-pay .inf-offer,body.no-pay #restorePay,body.no-pay #buyB,body.no-pay #buyPass,body.no-pay .pc.paid,body.no-pay .php,body.no-pay .pass-ok{display:none!important}
 body.no-pay .pass-grid{grid-template-columns:56px 1fr!important}
 </style>
 </head>
@@ -1911,6 +1911,45 @@ if (!PLATFORM.pay) {
     };
     on('pk_cat', () => choose('cat')); on('pk_dog', () => choose('dog')); on('closeM', closeModal);
   };
+  /* магазин за рекламу: серия роликов даёт набор бустеров (прогресс хранится, награды ограничены в день) */
+  const AD_PACKS = [
+    {id:'small', need:5,  title:'🔨 Набор бустеров',   desc:'3 молотка и 3 перемешивания',    h:3,  s:3,  perDay:2},
+    {id:'big',   need:10, title:'🧺 Большая корзинка', desc:'10 молотков и 10 перемешиваний', h:10, s:10, perDay:1}
+  ];
+  function adShopState(){
+    const d = new Date().toLocaleDateString('sv');
+    if (!S.adShop) S.adShop = {day:d, prog:{}, claimed:{}};
+    if (S.adShop.day !== d) { S.adShop.day = d; S.adShop.claimed = {}; }
+    return S.adShop;
+  }
+  shopModal = function(){
+    const A = adShopState();
+    const items = AD_PACKS.map(k => {
+      const prog = A.prog[k.id] || 0, got = A.claimed[k.id] || 0, locked = got >= k.perDay;
+      const dots = Array.from({length:k.need}, (_, i) => i < prog ? '●' : '○').join(' ');
+      return '<div class="shop-item"><h3>' + k.title + '</h3><p>' + k.desc + '. Нужно роликов: ' + k.need + '.</p>'
+        + '<p style="letter-spacing:2px;margin-top:6px">' + dots + '</p>'
+        + '<button class="btn alt" id="ad_' + k.id + '"' + (locked ? ' disabled' : '') + '>'
+        + (locked ? 'Сегодня уже получено — приходите завтра' : 'Смотреть ролик (' + (prog + 1) + ' из ' + k.need + ')') + '</button></div>';
+    }).join('');
+    openModal('<h2>Бустеры за ролики</h2><p>Смотрите ролики по желанию и копите на набор. Прогресс сохраняется.</p>' + items
+      + '<button class="btn ghost" id="closeM">Закрыть</button>');
+    $('#sheet').dataset.closable = '1';
+    AD_PACKS.forEach(k => on('ad_' + k.id, () => {
+      showAd('Реклама за награду', 'Игрок сам смотрит ролик ради набора бустеров.', () => {
+        const A2 = adShopState();
+        A2.prog[k.id] = (A2.prog[k.id] || 0) + 1;
+        if (A2.prog[k.id] >= k.need) {
+          A2.prog[k.id] = 0; A2.claimed[k.id] = (A2.claimed[k.id] || 0) + 1;
+          S.boost.hammer += k.h; S.boost.shuffle += k.s; SFX.coin(); updateBoosters();
+          toast('+' + k.h + ' 🔨 и +' + k.s + ' 🔀');
+        }
+        save(); shopModal();
+      });
+    }));
+    on('closeM', closeModal);
+  };
+  $('#shopBtn').onclick = () => shopModal();
   PASS.tiers[PASS.tiers.length - 1][0] = {hammer: 1, shuffle: 1, decor: 'leaves'};
   const pb = $('#petBtn'); if (pb) pb.onclick = () => petModal();
 }
