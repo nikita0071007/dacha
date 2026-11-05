@@ -474,6 +474,10 @@ body{background:radial-gradient(circle at 85% -4%,rgba(255,226,120,.85) 0 9%,rgb
 .tile.sel::before{display:none}
 .tile.s-row span,.tile.s-col span{background:radial-gradient(circle at 32% 24%,#fff,rgba(255,255,255,0) 52%),linear-gradient(180deg,#FFF3B0,#F7CF55);box-shadow:0 0 0 2px #E8B72E,0 0 14px rgba(255,200,60,.9)}
 #supportBtn{background:#FFE9F0;border-color:#F2A9C2}
+body.supporter .granny .g, body.supporter .sp-granny .gw{filter:drop-shadow(0 0 6px rgba(255,208,64,.95)) drop-shadow(0 0 14px rgba(255,190,40,.6))}
+body.supporter .granny .g::before, body.supporter .sp-granny .gw::before{content:"👑";position:absolute;left:50%;top:-.42em;transform:translateX(-50%) rotate(-8deg);font-size:.42em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));z-index:2}
+body.supporter .granny .g, body.supporter .sp-granny .gw{position:relative}
+body.supporter .granny .gname::after{content:" ✨"}
 </style>
 </head>
 <body>
@@ -934,6 +938,9 @@ function shopModal(){
   on('closeM', closeModal);
 }
 $('#shopBtn').onclick = shopModal;
+const SUPPORT_CODES = ['MARINA-GOLD', 'SPASIBO-BABUSHKE'];
+function applySkin(){ document.body.classList.toggle('supporter', !!S.supporter); }
+applySkin();
 /* добровольная поддержка автора (кнопка видна, только если задан window.SUPPORT_URL) */
 (function(){
   const btn = $('#supportBtn'); if (!btn || !window.SUPPORT_URL) return;
@@ -941,9 +948,17 @@ $('#shopBtn').onclick = shopModal;
   btn.onclick = () => {
     openModal(`<h2>💛 Поддержать автора</h2>
       <p>Игра бесплатная, и такой останется. Если она вам нравится, можно сказать спасибо любой суммой. Это добровольный перевод: он ничего не открывает в игре и ничего не меняет.</p>
+      <p><b>Спасибо в подарок:</b> коллекционная «Золотая Марина» — бабушка с золотым сиянием и короной. Автор пришлёт код, и он открывает скин.</p>
       <a class="btn alt" id="supportGo" href="${window.SUPPORT_URL}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Перевести через СБП</a>
+      <input id="supportCode" placeholder="Код от автора" autocomplete="off" style="width:100%;margin-top:10px;padding:12px;border-radius:14px;border:2px solid var(--wood2);font:inherit;text-align:center;box-sizing:border-box">
+      <button class="btn alt" id="supportApply" style="margin-top:8px">${S.supporter ? 'Скин уже открыт ✓' : 'Открыть скин'}</button>
       <button class="btn" id="supportClose" style="margin-top:8px">Закрыть</button>`);
     const c = $('#supportClose'); if (c) c.onclick = () => closeModal();
+    $('#supportApply').onclick = () => {
+      const v = ($('#supportCode').value || '').trim().toUpperCase();
+      if (SUPPORT_CODES.includes(v)) { S.supporter = true; save(); applySkin(); $('#supportApply').textContent = 'Скин открыт ✓'; try { SFX.win(); } catch (e) {} }
+      else $('#supportApply').textContent = 'Код не подошёл, проверьте';
+    };
   };
 })();
 
