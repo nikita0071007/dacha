@@ -689,8 +689,15 @@ const SFX = {
   weed: () => tone(950, .07, 'sine', .06),
   win: () => [523,659,784,1047].forEach((f, i) => tone(f, .26, 'triangle', .12, i * .12)),
   lose: () => [392,330,262].forEach((f, i) => tone(f, .3, 'triangle', .1, i * .15)),
-  coin: () => { tone(988, .08, 'square', .05); tone(1319, .16, 'square', .05, .07); }
+  coin: () => { tone(988, .08, 'square', .05); tone(1319, .16, 'square', .05, .07); },
+  collect: k => { const f = 880 * Math.pow(2, Math.min(k || 0, 7) / 12); tone(f, .07, 'square', .045); tone(f * 1.5, .1, 'triangle', .05, .05); },
+  beam: () => { tone(1500, .28, 'sawtooth', .035, 0, .2); tone(300, .25, 'triangle', .05, 0, 2.5); },
+  boom: () => { tone(160, .35, 'sawtooth', .07, 0, .35); tone(90, .3, 'square', .06, 0, .5); },
+  born: () => [1047, 1319, 1568, 2093].forEach((f, i) => tone(f, .09, 'triangle', .05, i * .045)),
+  low: () => { tone(740, .09, 'square', .045); tone(740, .09, 'square', .045, .14); }
 };
+let collectN = 0, collectTs = 0;
+function sfxCollect(){ const n = Date.now(); collectN = n - collectTs < 700 ? collectN + 1 : 0; collectTs = n; SFX.collect(collectN); }
 document.addEventListener('pointerdown', () => ac(), {once:true});
 function renderSound(){ $('#soundBtn').textContent = S.sound ? '🔊' : '🔇'; }
 $('#soundBtn').onclick = () => { S.sound = !S.sound; save(); renderSound(); };
@@ -1284,12 +1291,12 @@ function fxBeam(dir, i){
   const d = document.createElement('i'); d.className = 'beam ' + dir;
   if (dir === 'h') { d.style.top = (i * 100 / N) + '%'; d.style.height = (100 / N) + '%'; }
   else { d.style.left = (i * 100 / N) + '%'; d.style.width = (100 / N) + '%'; }
-  boardEl.appendChild(d); setTimeout(() => d.remove(), 600);
+  boardEl.appendChild(d); setTimeout(() => d.remove(), 600); SFX.beam();
 }
 function fxRing(r, c, small){
   const d = document.createElement('i'); d.className = 'ringfx' + (small ? ' small' : '');
   d.style.left = ((c + .5) * 100 / N) + '%'; d.style.top = ((r + .5) * 100 / N) + '%';
-  boardEl.appendChild(d); setTimeout(() => d.remove(), 700);
+  boardEl.appendChild(d); setTimeout(() => d.remove(), 700); if (small) SFX.born(); else SFX.boom();
 }
 function glowFrame(){ frameEl.classList.remove('glow'); void frameEl.offsetWidth; frameEl.classList.add('glow'); }
 /* собранное «летит» в цель на панели */
@@ -1310,7 +1317,7 @@ function fly(fromEl, html, goalKey, delay){
     {transform: `translate(${x1 - half}px,${y1 - half}px) scale(.45)`, opacity: .9}
   ], {duration: 520 + Math.random() * 160, delay: delay || 0, easing: 'cubic-bezier(.45,.05,.55,.95)', fill: 'backwards'});
   anim.onfinish = () => {
-    f.remove(); flyCount--;
+    f.remove(); flyCount--; sfxCollect();
     const ch = $('#goals') && $('#goals').children[idx];
     if (ch) { ch.classList.remove('bump'); void ch.offsetWidth; ch.classList.add('bump'); }
   };
@@ -1323,7 +1330,7 @@ function renderGoals(){
     return `<div class="goal ${left <= 0 ? 'done' : ''}"><span>${ICON(k)}</span><b>${left > 0 ? left : '✓'}</b></div>`;
   }).join('');
 }
-function updateHUD(){ $('#moves').textContent = G.moves; { const mv = $('#moves').parentNode; if (mv) mv.classList.toggle('low', G.moves > 0 && G.moves <= 3); } $('#lvName').textContent = 'Уровень ' + (G.lvl + 1); renderGoals(); }
+function updateHUD(){ $('#moves').textContent = G.moves; { const mv = $('#moves').parentNode; if (mv) { const was = mv.classList.contains('low'), now = G.moves > 0 && G.moves <= 3; mv.classList.toggle('low', now); if (now && !was) SFX.low(); } } $('#lvName').textContent = 'Уровень ' + (G.lvl + 1); renderGoals(); }
 function updateBoosters(){
   $('#hammerN').textContent = '×' + S.boost.hammer;
   $('#shuffleN').textContent = '×' + S.boost.shuffle;
