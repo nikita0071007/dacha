@@ -477,6 +477,7 @@ body{background:radial-gradient(circle at 85% -4%,rgba(255,226,120,.85) 0 9%,rgb
 .tile.sel span{box-shadow:0 0 0 3px var(--sun),0 4px 10px rgba(243,192,68,.7)}
 .tile.sel::before{display:none}
 .tile.s-row span,.tile.s-col span{background:radial-gradient(circle at 32% 24%,#fff,rgba(255,255,255,0) 52%),linear-gradient(180deg,#FFF3B0,#F7CF55);box-shadow:0 0 0 2px #E8B72E,0 0 14px rgba(255,200,60,.9)}
+#supportBtn{background:#FFE9F0;border-color:#F2A9C2}
 </style>
 </head>
 <body>
@@ -535,6 +536,7 @@ body{background:radial-gradient(circle at 85% -4%,rgba(255,226,120,.85) 0 9%,rgb
     <button class="chip" id="musicBtn" aria-label="Музыка">🎵</button>
     <button class="chip" id="soundBtn" aria-label="Звук">🔊</button>
     <button class="chip" id="shopBtn">🛒</button>
+    <button class="chip" id="supportBtn" hidden aria-label="Поддержать автора">💛</button>
     <button class="chip" id="petBtn" aria-label="Питомцы">🐾</button>
     <button class="chip money" id="moneyBtn" aria-pressed="false" aria-label="Где деньги">💰<span class="lbl"> Где деньги</span></button>
   </div>
@@ -937,6 +939,18 @@ function shopModal(){
   on('closeM', closeModal);
 }
 $('#shopBtn').onclick = shopModal;
+/* добровольная поддержка автора (кнопка видна, только если задан window.SUPPORT_URL) */
+(function(){
+  const btn = $('#supportBtn'); if (!btn || !window.SUPPORT_URL) return;
+  btn.hidden = false;
+  btn.onclick = () => {
+    openModal(`<h2>💛 Поддержать автора</h2>
+      <p>Игра бесплатная, и такой останется. Если она вам нравится, можно сказать спасибо любой суммой. Это добровольный перевод: он ничего не открывает в игре и ничего не меняет.</p>
+      <a class="btn alt" id="supportGo" href="${window.SUPPORT_URL}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Перевести через СБП</a>
+      <button class="btn" id="supportClose" style="margin-top:8px">Закрыть</button>`);
+    const c = $('#supportClose'); if (c) c.onclick = () => closeModal();
+  };
+})();
 
 function buyInf(then){
   demoPay('99 ₽', 'lives_infinite_30', () => { S.infUntil = Math.max(Date.now(), S.infUntil || 0) + 30 * 60000; save(); renderHeader(); closeModal(); toast('Бесконечные жизни на 30 минут!'); if (then) then(); });
