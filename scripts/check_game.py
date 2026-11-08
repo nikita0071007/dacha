@@ -52,3 +52,21 @@ with tempfile.TemporaryDirectory() as tmp:
         target.write_text(js, encoding="utf-8")
         subprocess.run(["node", "--check", str(target)], check=True)
 print(f"HTML validated: {len(p.ids)} ids discovered; {len(p.scripts)} inline scripts syntax-checked")
+
+# Regression guards for the agreed visual and gameplay progression.
+source = game.read_text(encoding="utf-8")
+checks = {
+    "six produce types": "['🍅','🥕','🥒','🍓','🥬','🍎']",
+    "house stage persistence": "S.houseStage=houseStage()+1",
+    "house progression": "const HOUSE_STAGES=[",
+    "ruined house damage": "const damage=stage===0?",
+    "final green shutters": "const shutters=stage>=5?",
+    "pet walking routes": "const PET_PATHS = {",
+    "pet motion accessibility": "function walkPets(){",
+    "grandma speech animation": "marina-mouth",
+    "three wardrobe outfits": "Зелёное в горошек",
+}
+for name, token in checks.items():
+    if token not in source:
+        sys.exit("Missing gameplay regression marker: " + name)
+print(f"Gameplay regression markers verified: {len(checks)}")
