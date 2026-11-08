@@ -1115,14 +1115,15 @@ function addPet(){
 const sceneEl = $('#scene'), grannyEl = $('#granny'), bubbleEl = $('#bubble');
 let gx = 50, gy = 74, sayTimer = null, pendingLine = null;
 const WHO = () => S.who === 'girl' ? {v:'внученька', came:'приехала', helper:'помощница'} : {v:'внучек', came:'приехал', helper:'помощник'};
+const VISITOR = () => (typeof S.visitorName === 'string' && S.visitorName.trim()) ? S.visitorName.trim() : WHO().v;
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const currentTask = () => ITEMS.find(it => !S.bought.includes(it.id));
 function taskLine(){
   const t = currentTask(), w = WHO();
-  if (!t) return 'Всё готово! Лучшая дача на свете. Спасибо, ' + w.v + '!';
+  if (!t) return 'Всё готово! Лучшая дача на свете. Спасибо, ' + VISITOR() + '!';
   const need = t.c - S.stars;
-  return need <= 0 ? cap(w.v) + ', звёзд хватает! Давай: ' + t.n.toLowerCase() + '?'
-                   : 'Следующее дело — ' + t.n.toLowerCase() + '. Нужно ещё ⭐ ' + need + '. Поможешь, ' + w.v + '?';
+  return need <= 0 ? cap(VISITOR()) + ', звёзд хватает! Давай: ' + t.n.toLowerCase() + '?'
+                   : 'Следующее дело — ' + t.n.toLowerCase() + '. Нужно ещё ⭐ ' + need + '. Поможешь, ' + VISITOR() + '?';
 }
 function idleLine(){
   const w = WHO(), V = w.v;
@@ -1175,12 +1176,21 @@ function placeGranny(x, y){
   grannyEl.classList.toggle('edge-l', x < 30);
   grannyEl.classList.toggle('edge-r', x > 70);
 }
+// Walk only on the accessible garden paths; never jump across the house or beds.
+const MARINA_PATH = [
+  {x:20,y:83}, {x:33,y:86}, {x:47,y:83}, {x:60,y:85},
+  {x:74,y:80}, {x:81,y:72}, {x:72,y:66}, {x:58,y:72},
+  {x:43,y:75}, {x:30,y:72}, {x:20,y:83}
+];
+let marinaPathStep = 0, marinaWalkStop = null;
 function walkGranny(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const x = 15 + rnd(71), y = 58 + rnd(33);
+  const p = MARINA_PATH[marinaPathStep % MARINA_PATH.length];
+  marinaPathStep++;
   grannyEl.classList.add('walk');
-  placeGranny(x, y);
-  setTimeout(() => grannyEl.classList.remove('walk'), 2400);
+  placeGranny(p.x, p.y);
+  clearTimeout(marinaWalkStop);
+  marinaWalkStop = setTimeout(() => grannyEl.classList.remove('walk'), 2400);
 }
 setInterval(() => {
   if ($('#home').hidden || !$('#modal').hidden || document.hidden) return;
