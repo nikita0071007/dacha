@@ -15,7 +15,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # GitHub-hosted Ubuntu runners already contain an Android SDK.
+      # android-actions/setup-android@v3 fails when it attempts to install the
+      # obsolete SDK package "tools"; use the runner SDK directly instead.
+      - name: Verify installed Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -d "$ANDROID_HOME"
+          test -d "$ANDROID_HOME/platforms/android-35" || "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
