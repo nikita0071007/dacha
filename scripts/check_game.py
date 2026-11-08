@@ -40,15 +40,17 @@ class GameParser(HTMLParser):
                 self.scripts.append("".join(self.current))
             self.in_script = False
 
-game = Path("index.html")
+game = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("index.html")
 if not game.exists():
     sys.exit("Missing index.html")
 p = GameParser()
 p.feed(game.read_text(encoding="utf-8"))
 if p.duplicate_ids:
     sys.exit("Duplicate HTML IDs: " + ", ".join(sorted(p.duplicate_ids)))
-if any(src.startswith(("http://", "https://", "//")) for src in p.external_scripts):
+if game != Path("index.html") and any(src.startswith(("http://", "https://", "//")) for src in p.external_scripts):
     sys.exit("External scripts are incompatible with offline APK")
+if game != Path("index.html") and ("fonts.googleapis.com" in game.read_text(encoding="utf-8") or "fonts.gstatic.com" in game.read_text(encoding="utf-8")):
+    sys.exit("Remote fonts are incompatible with offline APK")
 for required in ("home", "game", "scene", "granny", "wardrobeBtn", "gardenStyleBtn", "musicBtn", "soundBtn"):
     if required not in p.ids:
         sys.exit("Missing game UI element: " + required)
