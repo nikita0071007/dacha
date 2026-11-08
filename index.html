@@ -1276,7 +1276,7 @@ function houseStage(){
   return Number.isInteger(n)?Math.max(1,Math.min(5,n)):1;
 }
 function houseArtwork(){
-  const stage=houseStage(), name=HOUSE_STAGES[stage].n;
+  const stage=houseStage(), name=HOUSE_STAGES[stage].n+' — этап '+stage+' из 5';
   // One consistent cottage, with visibly repaired components at each stage.
   const roof=stage<2?'#705448':stage<5?'#A75D42':'#B85C43';
   const walls=stage<1?'#82745E':stage<5?'#BFA77F':'#F5E7C9';
