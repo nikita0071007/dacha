@@ -1358,7 +1358,7 @@ function buildTask(){
   const t = currentTask(); if (!t) return;
   if (S.stars < t.c) { say(taskLine(), 0); toast('Нужно ещё ⭐ ' + (t.c - S.stars) + ' — пройдите уровни'); return; }
   S.stars -= t.c; S.bought.push(t.id); save(); SFX.coin(); renderHeader();
-  pendingLine = 'Спасибо, ' + VISITOR() + '! ' + t.n + ' — красота!';
+  pendingLine = t.id==='house' ? 'Спасибо, '+VISITOR()+'! Стены укрепили, а крышу, окна и крыльцо ещё починим!' : 'Спасибо, ' + VISITOR() + '! ' + t.n + ' — красота!';
   renderHome(t.id);
   placeGranny(Math.min(85, Math.max(15, t.x + 10)), Math.min(91, Math.max(58, t.y + 12)));
 }
