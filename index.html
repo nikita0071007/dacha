@@ -482,7 +482,7 @@ body.supporter .granny .g, body.supporter .sp-granny .gw{filter:drop-shadow(0 0 
 body.supporter .granny .g::before, body.supporter .sp-granny .gw::before{content:"👑";position:absolute;left:50%;top:-.42em;transform:translateX(-50%) rotate(-8deg);font-size:.42em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));z-index:2}
 body.supporter .granny .g, body.supporter .sp-granny .gw{position:relative}
 body.supporter .granny .gname::after{content:" ✨"}
-body[data-marina-outfit="spring"] #granny svg.gr{filter:hue-rotate(65deg) saturate(1.2)}body[data-marina-outfit="autumn"] #granny svg.gr{filter:sepia(.4) hue-rotate(-20deg) saturate(1.3)}.marina-outfits{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}.marina-outfits button{flex:1;min-width:80px;padding:12px 5px;border-radius:12px;border:2px solid var(--wood2);background:var(--paper);color:var(--ink);font:inherit}.marina-outfits button[aria-pressed="true"]{outline:3px solid var(--sun)}body[data-garden-style="flowers"] #scene{filter:saturate(1.16)}body[data-garden-style="evening"] #scene{filter:sepia(.14) brightness(.9) saturate(1.16)}.garden-styles{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.garden-styles button{flex:1;min-width:85px;border:2px solid var(--wood2);border-radius:12px;padding:12px 6px;background:var(--paper);color:var(--ink);font:inherit}.garden-styles button[aria-pressed="true"]{outline:3px solid var(--sun)}</style>
+body[data-marina-outfit="spring"] #granny svg.gr{filter:hue-rotate(65deg) saturate(1.2)}body[data-marina-outfit="autumn"] #granny svg.gr{filter:sepia(.4) hue-rotate(-20deg) saturate(1.3)}.marina-outfits{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}.marina-outfits button{flex:1;min-width:80px;padding:12px 5px;border-radius:12px;border:2px solid var(--wood2);background:var(--paper);color:var(--ink);font:inherit}.marina-outfits button[aria-pressed="true"]{outline:3px solid var(--sun)}body[data-garden-style="flowers"] #scene{filter:saturate(1.16)}body[data-garden-style="evening"] #scene{filter:sepia(.14) brightness(.9) saturate(1.16)}.garden-styles{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.garden-styles button{flex:1;min-width:85px;border:2px solid var(--wood2);border-radius:12px;padding:12px 6px;background:var(--paper);color:var(--ink);font:inherit}.garden-styles button[aria-pressed="true"]{outline:3px solid var(--sun)}#granny.walk .gr-l1{transform-origin:17px 51px;animation:ms .4s infinite alternate}#granny.walk .gr-l2{transform-origin:23px 51px;animation:ms .4s infinite alternate-reverse}#granny.walk .gr-a1{transform-origin:14px 31px;animation:ms .4s infinite alternate-reverse}#granny.walk .gr-a2{transform-origin:26px 31px;animation:ms .4s infinite alternate}#granny.granny-wave .gr-a2{transform-origin:26px 31px;animation:mw .3s 4 alternate}.it.pet{transition:left 1.8s,top 1.8s;cursor:pointer}.it.pet.pet-moving>span{display:inline-block;animation:pb .3s infinite alternate}.it.pet.pet-react>span{display:inline-block;animation:ph .3s 3}@keyframes ms{to{transform:rotate(18deg)}}@keyframes mw{to{transform:rotate(-45deg)}}@keyframes pb{to{transform:translateY(-3px)}}@keyframes ph{50%{transform:translateY(-9px)}}@media(prefers-reduced-motion:reduce){#granny.walk .gr-leg,#granny.walk .gr-arm,#granny.granny-wave .gr-a2,.it.pet>span{animation:none!important}.it.pet{transition:none}}</style>
 </head>
 <body>
 <noscript><div style="position:fixed;left:0;right:0;top:0;z-index:300;background:#FFF1B8;color:#5A4300;padding:14px 16px;font:600 15px/1.4 sans-serif;text-align:center">
@@ -1089,7 +1089,11 @@ function addPet(){
     d.className = 'it pet ' + k;
     d.style.left = PET_POS[k][0] + '%'; d.style.top = PET_POS[k][1] + '%'; d.style.fontSize = '.9em'; d.style.zIndex = 60;
     d.innerHTML = '<span>' + PETS[k].e + '</span>';
+    d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label',PETS[k].n + ': услышать голос');
+    d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click()}};
     d.onclick = () => {
+      d.classList.remove('pet-react'); void d.offsetWidth; d.classList.add('pet-react');
+      setTimeout(() => d.classList.remove('pet-react'), 900);
       petSound(k);
       const t = document.createElement('div'); t.className = 'pet-say'; t.textContent = PETS[k].say;
       d.appendChild(t); setTimeout(() => t.remove(), 1000);
@@ -1172,7 +1176,7 @@ setInterval(() => {
   walkGranny();
   if (Math.random() < .3) say(idleLine(), 3200);
 }, 5500);
-grannyEl.onclick = () => say(Math.random() < .5 ? idleLine() : taskLine(), 3000);
+grannyEl.onclick = () => {grannyEl.classList.remove('granny-wave');void grannyEl.offsetWidth;grannyEl.classList.add('granny-wave');setTimeout(()=>grannyEl.classList.remove('granny-wave'),1250);say(Math.random() < .5 ? idleLine() : taskLine(), 3000)};
 
 function fitScene(){ sceneEl.style.fontSize = (sceneEl.clientWidth / 11) + 'px'; }
 window.addEventListener('resize', fitScene);
@@ -2075,6 +2079,8 @@ renderHeader(); renderHome();
 
 /* Декоративное настроение дачи: отдельный ключ, не меняет прогресс. */
 (function(){const key='dacha_garden_style_v1',options={classic:'🏡 Обычная',flowers:'🌻 Цветущая',evening:'🌇 Вечерняя'};let current='classic';try{const x=localStorage.getItem(key);if(Object.prototype.hasOwnProperty.call(options,x))current=x}catch(e){}function apply(){document.body.dataset.gardenStyle=current}apply();on('gardenStyleBtn',()=>{openModal('<h2>🌼 Настроение дачи</h2><p>Бесплатные варианты оформления. Постройки и звёзды сохраняются.</p><div class="garden-styles">'+Object.entries(options).map(([id,label])=>'<button type="button" data-style="'+id+'" aria-pressed="'+(current===id)+'">'+label+'</button>').join('')+'</div><button class="btn" id="gardenStyleClose">Готово</button>');document.querySelectorAll('.garden-styles button').forEach(b=>b.onclick=()=>{current=b.dataset.style;try{localStorage.setItem(key,current)}catch(e){}apply();document.querySelectorAll('.garden-styles button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});on('gardenStyleClose',closeModal)})})();
+
+setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;sceneEl.querySelectorAll('.it.pet').forEach(d=>{if(Math.random()>.7)return;d.classList.add('pet-moving');d.style.left=(14+Math.random()*72).toFixed(1)+'%';d.style.top=(65+Math.random()*22).toFixed(1)+'%';setTimeout(()=>{if(d.isConnected)d.classList.remove('pet-moving')},1850)})},6500);
 </script>
 </body>
 </html>
