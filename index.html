@@ -936,7 +936,7 @@ function renderHeader(){
 setInterval(renderHeader, 1000);
 
 /* ---------- общие окна ---------- */
-function openModal(html){ $('#sheet').innerHTML = html; $('#modal').hidden = false; }
+function openModal(html){ $('#sheet').dataset.closable = '1'; $('#sheet').innerHTML = html; $('#modal').hidden = false; }
 function closeModal(){ $('#modal').hidden = true; }
 function on(id, fn){ const el = document.getElementById(id); if (el) el.onclick = fn; }
 let toastT;
