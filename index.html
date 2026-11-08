@@ -1129,7 +1129,7 @@ function addPet(){
   S.pets.forEach(k => {
     const d = document.createElement('div');
     d.className = 'it pet ' + k;
-    d.style.left = PET_POS[k][0] + '%'; d.style.top = PET_POS[k][1] + '%'; d.style.fontSize = '.9em'; d.style.zIndex = 60; d.title = PETS[k].n;
+    const pos=PET_PATHS[k][petPathSteps[k]]; d.style.left = pos[0] + '%'; d.style.top = pos[1] + '%'; d.style.fontSize = '.9em'; d.style.zIndex = 60; d.title = PETS[k].n;
     d.innerHTML = '<span>' + PETS[k].e + '</span>'; d.dataset.pet = k;
     d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-pressed','false'); d.setAttribute('aria-label',PETS[k].n + ': услышать голос');
     d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click()}};
