@@ -1152,7 +1152,7 @@ const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 const currentTask = () => ITEMS.find(it => !S.bought.includes(it.id));
 function taskLine(){
   const t = currentTask(), w = WHO();
-  if (!t) return 'Всё готово! Лучшая дача на свете. Спасибо, ' + VISITOR() + '!';
+  if (!t) return houseStage()<5 ? VISITOR()+', домик ещё ждёт ремонта! Давай доведём его до красоты.' : 'Всё готово! Лучшая дача на свете. Спасибо, ' + VISITOR() + '!';
   const need = t.c - S.stars;
   return need <= 0 ? cap(VISITOR()) + ', звёзд хватает! Давай: ' + t.n.toLowerCase() + '?'
                    : 'Следующее дело — ' + t.n.toLowerCase() + '. Нужно ещё ⭐ ' + need + '. Поможешь, ' + VISITOR() + '?';
