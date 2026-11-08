@@ -905,11 +905,17 @@ renderMusicBtn();
 
 /* ---------- жизни ---------- */
 function updateLives(){
-  if (S.lives >= MAX_LIVES) return;
-  const gain = Math.floor((Date.now() - S.lifeTs) / LIFE_MS);
-  if (gain > 0) { S.lives = Math.min(MAX_LIVES, S.lives + gain); S.lifeTs += gain * LIFE_MS; save(); }
+  if (S.lives >= MAX_LIVES) { S.lifeTs=Date.now(); return; }
+  const now=Date.now();
+  if(S.lifeTs>now)S.lifeTs=now;
+  const gain = Math.floor((now - S.lifeTs) / LIFE_MS);
+  if (gain > 0) {
+    S.lives = Math.min(MAX_LIVES, S.lives + gain);
+    S.lifeTs = S.lives===MAX_LIVES ? now : S.lifeTs + gain * LIFE_MS;
+    save();
+  }
 }
-function nextLifeIn(){ return LIFE_MS - ((Date.now() - S.lifeTs) % LIFE_MS); }
+function nextLifeIn(){ return Math.max(0,LIFE_MS - ((Date.now() - S.lifeTs) % LIFE_MS)); }
 function fmt(ms){ const s = Math.ceil(ms / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 function lifeAtRisk(){ return !hasInf() && !(G && G.lvl < FREE_LEVELS); }
 function loseLife(){
