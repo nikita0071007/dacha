@@ -53,6 +53,21 @@ const path = require('path');
   await page.waitForTimeout(500);
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('dacha3v2') || '{}'));
   if (saved.who !== 'boy' || saved.visitorName !== 'Тест') throw new Error('Saved visitor lost after reload');
+  // Corrupted local storage must not crash the game or unlock invalid levels.
+  await page.evaluate(() => {
+    const broken = {who:'boy', visitorName:'Тест', level:999, stars:-99, lives:999, bought:null, pets:['cat','cat','invalid'], best:null, boost:null, lifeTs:Date.now()+86400000};
+    localStorage.setItem('dacha3v2', JSON.stringify(broken));
+  });
+  await page.reload();
+  await page.waitForTimeout(400);
+  const recovered = await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem('dacha3v2') || '{}');
+    return {level:state.level,stars:state.stars,lives:state.lives,pets:state.pets,bought:state.bought};
+  });
+  if (recovered.level !== 50 || recovered.stars !== 0 || recovered.lives > 5 ||
+      !Array.isArray(recovered.bought) || JSON.stringify(recovered.pets)!=='["cat"]') {
+    throw new Error('Corrupted save recovery failed: '+JSON.stringify(recovered));
+  }
   if (errors.length) throw new Error('JavaScript errors: '+errors.join(' | '));
   console.log('PASS: intro, persistent visitor, home, wardrobe, garden style, level, no uncaught JS errors');
   await browser.close();
