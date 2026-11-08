@@ -49,6 +49,19 @@ const path = require('path');
   await page.waitForTimeout(900);
   if (await page.locator('#game').isHidden()) throw new Error('Level did not open');
   await page.screenshot({ path: 'smoke-game.png', fullPage: true });
+  const boards = await page.evaluate(() => {
+    const issues = [];
+    for(let level=0;level<LEVELS.length;level++){
+      for(let sample=0;sample<4;sample++){
+        const B=genBoard(LEVELS[level].boxes);
+        if(findRuns(B).length)issues.push('initial matches at level '+(level+1));
+        if(!hasMove(B))issues.push('no valid move at level '+(level+1));
+        if(B.length!==N||B.some(row=>row.length!==N))issues.push('invalid board dimensions');
+      }
+    }
+    return {levels:LEVELS.length,issues};
+  });
+  if(boards.levels!==50||boards.issues.length)throw new Error('Board generation: '+JSON.stringify(boards));
   await page.reload();
   await page.waitForTimeout(500);
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('dacha3v2') || '{}'));
