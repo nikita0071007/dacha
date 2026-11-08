@@ -757,7 +757,7 @@ function buildTrack(t){
   return t;
 }
 const TRACKS = {
-  splash: buildTrack({ bpm: 140, lead: .045, arp: .014, drums: 'khshkksh', chords: ['C','F','G','C','Am','F','G','C'],
+  splash: buildTrack({ bpm: 112, lead: .035, arp: .010, drums: 'kh--kh--', chords: ['C','F','G','C','Am','F','G','C'],
     mel: [['G4',.5],['C5',.5],['E5',.5],['G5',.5],['E5',1],['C5',1],
           ['A4',.5],['C5',.5],['F5',.5],['A5',.5],['G5',1],['F5',1],
           ['B4',.5],['D5',.5],['G5',.5],['B5',.5],['A5',.5],['G5',.5],['F5',.5],['D5',.5],
@@ -776,7 +776,7 @@ const TRACKS = {
           ['F5',1],['E5',1],['D5',1],['C5',1],['A4',2],['C5',2],
           ['D5',1],['F5',1],['A5',1],['F5',1],['E5',2],['D5',2],
           ['G5',1],['E5',1],['D5',1],['C5',3],[null,2]] }),
-  level: buildTrack({ bpm: 168, lead: .042, arp: .012, drums: 'khskkhsk', chords: ['Am','F','C','G','Am','F','G','E'],
+  level: buildTrack({ bpm: 128, lead: .035, arp: .009, drums: 'kh--kh--', chords: ['Am','F','C','G','Am','F','G','E'],
     mel: [['A4',.5],['C5',.5],['E5',.5],['A5',.5],['G5',.5],['E5',.5],['C5',.5],['E5',.5],
           ['F5',.5],['A5',.5],['C6',.5],['A5',.5],['G5',1],['F5',1],
           ['E5',.5],['G5',.5],['C6',.5],['G5',.5],['E5',.5],['G5',.5],['C6',1],
@@ -821,7 +821,7 @@ function kick(t){
 function mSched(){
   if (!MUS.cur || !AC || !MUS.gain) return;
   const tr = TRACKS[MUS.cur], sd = 60 / tr.bpm / 4, now = AC.currentTime, ahead = now + .3;
-  if (MUS.t < now - .2) { MUS.t = now + .05; MUS.i = 0; }
+  if (MUS.t < now - .2) { MUS.t = now + .05; MUS.i = 0; } if (MUS.t > now + 2) MUS.t = now + .05;
   while (MUS.t < ahead) {
     const i = MUS.i, t = MUS.t, s = i % 16, ch = chordOf(tr.chords[Math.floor(i / 16)]);
     const e = tr.melEv[i];
@@ -848,12 +848,12 @@ function stopMusic(){
   MUS.gain = null; MUS.cur = null;
 }
 function playTrack(name){
-  if (!S.music || document.hidden) return;
+  if (!S.music || document.hidden || !TRACKS[name]) return;
   if (MUS.cur === name) return;
   stopMusic();
   const a = ac(); if (!a) return;
   MUS.cur = name;
-  MUS.gain = a.createGain(); MUS.gain.gain.value = .85; MUS.gain.connect(a.destination);
+  MUS.gain = a.createGain(); MUS.gain.gain.value = .65; MUS.gain.connect(a.destination);
   MUS.t = a.currentTime + .08; MUS.i = 0;
   MUS.timer = setInterval(mSched, 80); mSched();
 }
@@ -869,7 +869,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { if (MUS.cur) { MUS.want = MUS.cur; stopMusic(); } }
   else if (MUS.want) { const w = MUS.want; MUS.want = null; playTrack(w); }
 });
-function renderMusicBtn(){ const b = $('#musicBtn'); b.classList.toggle('off', !S.music); b.setAttribute('aria-pressed', S.music); }
+function renderMusicBtn(){ const b = $('#musicBtn'); b.classList.toggle('off', !S.music); b.setAttribute('aria-pressed', String(!!S.music)); b.setAttribute('aria-label', S.music ? 'Выключить музыку' : 'Включить музыку'); b.title=b.getAttribute('aria-label'); }
 $('#musicBtn').onclick = () => { S.music = !S.music; save(); renderMusicBtn(); if (S.music) playTrack(MUS.scene); else stopMusic(); };
 renderMusicBtn();
 
@@ -1018,7 +1018,7 @@ function playBark(out, t){
 }
 function petSound(kind){
   kind = kind || S.pets[0];
-  const a = ac(); if (!a || !S.sound) return;
+  const a = ac(); if (!a || !S.sound || document.hidden) return;
   const t = a.currentTime + .02, out = a.createGain(); out.gain.value = .5; out.connect(a.destination);
   if (kind === 'cat') {
     // «мя-у»: голос с изменением высоты и гласной
@@ -1088,9 +1088,9 @@ function addPet(){
   S.pets.forEach(k => {
     const d = document.createElement('div');
     d.className = 'it pet ' + k;
-    d.style.left = PET_POS[k][0] + '%'; d.style.top = PET_POS[k][1] + '%'; d.style.fontSize = '.9em'; d.style.zIndex = 60;
-    d.innerHTML = '<span>' + PETS[k].e + '</span>';
-    d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label',PETS[k].n + ': услышать голос');
+    d.style.left = PET_POS[k][0] + '%'; d.style.top = PET_POS[k][1] + '%'; d.style.fontSize = '.9em'; d.style.zIndex = 60; d.title = PETS[k].n;
+    d.innerHTML = '<span>' + PETS[k].e + '</span>'; d.dataset.pet = k;
+    d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-pressed','false'); d.setAttribute('aria-label',PETS[k].n + ': услышать голос');
     d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click()}};
     d.onclick = () => {
       d.classList.remove('pet-react'); void d.offsetWidth; d.classList.add('pet-react');
