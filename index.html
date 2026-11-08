@@ -1246,6 +1246,15 @@ function renderTask(){
   el.innerHTML = '<div class="ti">' + (t.svg || t.e.slice(0, 2)) + '</div><div class="tt"><b>' + t.n + '</b><small>Задание бабушки. Построено ' + S.bought.length + ' из ' + ITEMS.length + '</small></div>'
     + '<button class="btn alt tb' + (can ? '' : ' need') + '" id="buildBtn">Построить ⭐ ' + t.c + '</button>';
   on('buildBtn', buildTask);
+  if(S.bought.includes('fence') && fenceStage()<4){
+    const next=FENCE_STAGES[fenceStage()+1];
+    const button=document.createElement('button');
+    button.className='btn alt tb';
+    button.textContent='🪵 '+next.n+' ⭐ '+next.c;
+    button.setAttribute('aria-label','Улучшить забор: '+next.n+', '+next.c+' звёзд');
+    button.onclick=renovateFence;
+    el.appendChild(button);
+  }
 }
 function buildTask(){
   const t = currentTask(); if (!t) return;
