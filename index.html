@@ -1103,6 +1103,26 @@ function petModal(){
   on('pk_cat', () => choose('cat')); on('pk_dog', () => choose('dog')); on('closeM', closeModal);
 }
 const PET_POS = {cat: [43, 51], dog: [60, 52]};
+const PET_PATHS = {
+  cat:[[43,51],[37,55],[31,57],[37,55],[47,53],[43,51]],
+  dog:[[60,52],[67,59],[74,63],[68,68],[58,62],[60,52]]
+};
+const petPathSteps={cat:0,dog:0};
+function walkPets(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if($('#home').hidden||!$('#modal').hidden||document.hidden)return;
+  S.pets.forEach(k=>{
+    const el=sceneEl.querySelector('.it.pet[data-pet="'+k+'"]');
+    const path=PET_PATHS[k];
+    if(!el||!path)return;
+    petPathSteps[k]=(petPathSteps[k]+1)%path.length;
+    const [x,y]=path[petPathSteps[k]];
+    el.style.transition='left 2.4s ease-in-out, top 2.4s ease-in-out';
+    el.style.left=x+'%';el.style.top=y+'%';
+    el.style.zIndex=Math.round(y);
+  });
+}
+setInterval(walkPets,4400);
 function addPet(){
   const sp = $('#spPet');
   if (sp) { sp.innerHTML = S.pets.map(k => PETS[k].e).join(''); sp.className = 'sp-i sp-pet' + (S.pets.length === 1 ? ' ' + S.pets[0] : ''); }
