@@ -1201,12 +1201,32 @@ grannyEl.setAttribute('role','button'); grannyEl.tabIndex=0; grannyEl.setAttribu
 
 function fitScene(){ sceneEl.style.fontSize = (sceneEl.clientWidth / 11) + 'px'; }
 window.addEventListener('resize', fitScene);
+
+const FENCE_STAGES = [{n:'Старый забор',c:0},{n:'Починенный забор',c:0},{n:'Покрашенный забор',c:5},{n:'Резной забор',c:9},{n:'Белый забор с калиткой',c:15}];
+function fenceStage(){
+  if(!S.bought.includes('fence'))return 0;
+  const n=Number(S.fenceStage);
+  return Number.isInteger(n)?Math.max(1,Math.min(4,n)):1;
+}
+function fenceArtwork(svg){
+  const effects={2:'sepia(.22) saturate(1.5)',3:'sepia(.2) saturate(1.6) hue-rotate(28deg)',4:'grayscale(.8) brightness(1.55)'};
+  const fx=effects[fenceStage()];
+  return fx?'<span style="display:inline-block;filter:'+fx+'">'+svg+'</span>':svg;
+}
+function renovateFence(){
+  if(!S.bought.includes('fence')||fenceStage()>=4)return;
+  const next=FENCE_STAGES[fenceStage()+1];
+  if(S.stars<next.c){toast('Для забора нужно ещё ⭐ '+(next.c-S.stars));return;}
+  S.stars-=next.c;S.fenceStage=fenceStage()+1;save();SFX.coin();renderHeader();
+  pendingLine='Какой красивый забор, '+VISITOR()+'! '+next.n+'!';
+  renderHome('fence');
+}
 function renderScene(justBought){
   sceneEl.querySelectorAll('.it').forEach(e => e.remove());
   const task = currentTask();
   ITEMS.forEach(it => {
     const has = S.bought.includes(it.id), isTask = !has && task && task.id === it.id;
-    let txt = has ? art(it) : (it.pre || (isTask ? art(it) : null));
+    let txt = has ? (it.id === 'fence' ? fenceArtwork(art(it)) : art(it)) : (it.pre || (isTask ? art(it) : null));
     if (!txt) return;
     const d = document.createElement('div');
     d.className = 'it' + (isTask && !it.pre ? ' ghost' : '') + (it.id === justBought ? ' new' : '');
@@ -1231,7 +1251,7 @@ function buildTask(){
   const t = currentTask(); if (!t) return;
   if (S.stars < t.c) { say(taskLine(), 0); toast('Нужно ещё ⭐ ' + (t.c - S.stars) + ' — пройдите уровни'); return; }
   S.stars -= t.c; S.bought.push(t.id); save(); SFX.coin(); renderHeader();
-  pendingLine = 'Спасибо, ' + WHO().v + '! ' + t.n + ' — красота!';
+  pendingLine = 'Спасибо, ' + VISITOR() + '! ' + t.n + ' — красота!';
   renderHome(t.id);
   placeGranny(Math.min(85, Math.max(15, t.x + 10)), Math.min(91, Math.max(58, t.y + 12)));
 }
