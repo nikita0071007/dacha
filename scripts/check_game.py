@@ -65,6 +65,13 @@ checks = {
     "pet motion accessibility": "function walkPets(){",
     "grandma speech animation": "marina-mouth",
     "three wardrobe outfits": "Зелёное в горошек",
+    "marina outfit sprite": 'class="marina-dress"',
+    "bengal cat sprite": 'Бенгальская кошка',
+    "dark brindle bulldog": '#57443C',
+    "direct house repair": "d.onclick=renovateHouse",
+    "direct fence repair": "d.onclick=renovateFence",
+    "save data recovery": "if (!Array.isArray(S.bought)) S.bought = [];",
+    "persist visitor name": "S.visitorName = name;",
 }
 for name, token in checks.items():
     if token not in source:
