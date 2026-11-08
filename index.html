@@ -1881,6 +1881,7 @@ function levelHint(){
   return 'Меняйте соседние овощи местами — пальцем или двумя нажатиями.';
 }
 function startLevel(i){
+  if(!Number.isInteger(i)||i<0||i>=LEVELS.length||i>S.level){toast('Этот уровень пока недоступен');return;}
   updateLives();
   if (S.lives <= 0 && !hasInf() && i >= FREE_LEVELS) return livesModal(() => startLevel(i));
   const L = LEVELS[i];
