@@ -503,6 +503,30 @@ body[data-marina-outfit="autumn"] #granny svg.gr .marina-pattern{fill:#2356A1;st
 #granny.talking svg.gr .marina-mouth{transform-box:fill-box;transform-origin:center;animation:marina-talk .22s ease-in-out infinite alternate}
 @keyframes marina-talk{from{transform:scaleY(.45)}to{transform:scaleY(1.6)}}
 @media(prefers-reduced-motion:reduce){#granny.talking svg.gr .marina-mouth{animation:none}}
+
+/* Live garden refresh: real interactive scene remains above this painted backdrop. */
+#home>.title{font-size:clamp(28px,7vw,40px);margin:12px 0 2px;line-height:1.08;letter-spacing:-.6px}
+#home>.lead{font-size:14px;line-height:1.35;margin:7px 0 14px;max-width:37ch}
+.top{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:10px 0 8px}
+.top .spacer{display:none}
+.top .chip{min-width:0;width:100%;padding:9px 4px;border-radius:15px;font-size:19px;min-height:48px;box-sizing:border-box}
+.top #livesChip,.top .chip:nth-child(2),.top #pieBtn{grid-column:span 2}
+.top #moneyBtn{display:none}
+#scene.scene{position:relative;aspect-ratio:4/3;border:5px solid #F8E5A2;border-radius:25px;background:linear-gradient(180deg,#6BC4ED 0%,#E3F8FF 30%,#95CB60 31%,#62A943 100%);box-shadow:0 7px 0 #73923D,0 12px 23px rgba(68,86,37,.18)}
+#scene .garden-landscape{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+#scene .deco.sun{font-size:1.12em;filter:drop-shadow(0 2px 4px #E6A72A)}
+#scene .it{filter:drop-shadow(0 4px 2px rgba(35,65,24,.22))}
+#scene .it[role=button]{cursor:pointer}
+#scene #granny{z-index:100;min-width:76px;will-change:left,top}
+#scene #granny .gf{display:inline-block;transform:none}
+#scene #granny.left .gf{transform:scaleX(-1)}
+#scene #granny svg.gr{display:block!important;width:clamp(58px,13vw,90px)!important;height:auto!important;max-width:none!important;aspect-ratio:40/64}
+#scene #granny .gname{font-size:clamp(10px,2vw,14px);display:inline-block;background:#52883D;border:1px solid #C0DB8C;color:#FFF;padding:3px 7px;border-radius:999px;text-shadow:none;margin-top:1px}
+#scene .bubble{max-width:170px;font-size:clamp(11px,2.6vw,16px);border:2px solid #F7DDA6;box-shadow:0 3px 8px #405A3550}
+#task{border-radius:20px}
+#playBtn{background:linear-gradient(180deg,#8FD34A,#3C922D);border-color:#4C8D31;box-shadow:0 5px 0 #347628,0 11px 18px #40672D33}
+@media(max-width:380px){.top{gap:5px}.top .chip{font-size:17px;padding:7px 3px;min-height:42px}}
+
 </style>
 </head>
 <body>
@@ -570,6 +594,23 @@ body[data-marina-outfit="autumn"] #granny svg.gr .marina-pattern{fill:#2356A1;st
     <h1 class="title">Бабушкина дача</h1>
     <p class="lead">Собирайте урожай по три в ряд, получайте звёзды и помогайте бабушке Марине привести дачу в порядок.</p>
     <div class="scene" id="scene">
+      <svg class="garden-landscape" viewBox="0 0 400 300" preserveAspectRatio="none" aria-hidden="true">
+<defs><linearGradient id="farHill" x2="0" y2="1"><stop stop-color="#C7E893"/><stop offset="1" stop-color="#91C866"/></linearGradient><linearGradient id="pathGravel" x2="0" y2="1"><stop stop-color="#F4DBA2"/><stop offset="1" stop-color="#C89D6D"/></linearGradient><linearGradient id="treeLeaf" x2="0" y2="1"><stop stop-color="#B0DA58"/><stop offset=".5" stop-color="#5EA63B"/><stop offset="1" stop-color="#3F8535"/></linearGradient></defs>
+<path d="M0 100Q78 78 166 99T400 91V170H0Z" fill="url(#farHill)" opacity=".82"/>
+<path d="M0 146Q87 128 166 149T400 137V300H0Z" fill="#80BB4E" opacity=".45"/>
+<path d="M161 171Q199 184 234 171L355 300H44Z" fill="url(#pathGravel)" opacity=".9"/>
+<path d="M173 175Q198 184 220 176L306 300H98Z" fill="#E8C792" opacity=".75"/>
+<g opacity=".9" fill="#EED4A9"><ellipse cx="187" cy="194" rx="6" ry="2"/><ellipse cx="215" cy="219" rx="9" ry="3"/><ellipse cx="155" cy="251" rx="12" ry="4"/><ellipse cx="260" cy="272" rx="10" ry="3"/></g>
+<g><path d="M34 151V90" stroke="#805B37" stroke-width="12" stroke-linecap="round"/><path d="M358 149V87" stroke="#805B37" stroke-width="13" stroke-linecap="round"/><path d="M14 107Q-8 76 19 64Q29 34 53 54Q76 42 83 74Q111 91 82 111Q48 133 14 107Z" fill="url(#treeLeaf)" stroke="#47853D" stroke-width="3"/><path d="M328 103Q306 68 333 54Q352 30 376 54Q396 51 400 80V115Q359 139 328 103Z" fill="url(#treeLeaf)" stroke="#47853D" stroke-width="3"/>
+<g fill="#F2C854"><circle cx="24" cy="82" r="4"/><circle cx="57" cy="67" r="4"/><circle cx="74" cy="95" r="4"/><circle cx="342" cy="81" r="4"/><circle cx="379" cy="68" r="4"/></g></g>
+<g><path d="M0 207Q30 190 79 208L126 243L120 267L0 250Z" fill="#49883D" stroke="#39753B" stroke-width="3"/><path d="M400 206Q369 190 323 205L282 241L290 268L400 253Z" fill="#4D913E" stroke="#39753B" stroke-width="3"/>
+<path d="M9 225L96 247M8 240L86 260M398 222L305 249M398 239L316 260" stroke="#A16E43" stroke-width="9" stroke-linecap="round"/>
+<path d="M9 222L96 244M8 237L86 257M398 219L305 246M398 236L316 257" stroke="#E1B275" stroke-width="6" stroke-linecap="round"/>
+<g stroke="#397A32" stroke-width="2.5" stroke-linecap="round"><path d="M26 231l-3-18m3 18 11-16M54 242l-7-17m7 17 9-17M340 241l-10-18m10 18 11-18M370 232l-9-18m9 18 9-16"/></g>
+<g fill="#E94F3B" stroke="#B73625" stroke-width="1"><circle cx="24" cy="215" r="6"/><circle cx="37" cy="216" r="5"/><circle cx="47" cy="227" r="5"/><circle cx="63" cy="225" r="6"/></g>
+<g fill="#F4CC45" stroke="#DB9C2D" stroke-width="1"><circle cx="330" cy="226" r="6"/><circle cx="346" cy="222" r="5"/><circle cx="360" cy="218" r="6"/><circle cx="378" cy="215" r="5"/></g></g>
+<g fill="#F6E39F" opacity=".9"><circle cx="12" cy="174" r="2"/><circle cx="97" cy="166" r="2"/><circle cx="312" cy="174" r="2"/><circle cx="387" cy="184" r="2"/><circle cx="75" cy="280" r="2"/><circle cx="324" cy="287" r="2"/></g>
+</svg>
       <span class="deco sun" style="left:86%;top:4%">☀️</span>
       <span class="deco cloud" style="top:5%;animation-delay:-12s">☁️</span>
       <span class="deco cloud" style="top:14%;font-size:.65em;animation-delay:-34s">☁️</span>
@@ -684,6 +725,9 @@ const LEVELS = [
 const MOVES_TUNED = {"1":16,"2":21,"3":16,"4":20,"5":18,"6":23,"7":23,"8":24,"9":21,"10":25,"11":18,"12":28,"13":30,"14":25,"15":29,"16":29,"17":29,"18":27,"19":25,"20":24,"21":26,"22":19,"23":23,"24":30,"25":26,"26":26,"27":27,"28":24,"29":21,"30":24,"31":31,"32":24,"33":28,"34":32,"35":26,"36":22,"37":29,"38":33,"39":27,"40":20,"41":28,"42":33,"43":31,"44":29,"45":30,"46":21,"47":26,"48":24,"49":30,"50":28};
 LEVELS.forEach((L, i) => { if (MOVES_TUNED[i + 1]) L.moves = MOVES_TUNED[i + 1]; });
 
+// Ensure the in-game character uses the same Marina artwork as all dialogues.
+const marinaSceneSprite=document.querySelector('#granny .gf');
+if(marinaSceneSprite)marinaSceneSprite.innerHTML=GRANNY_SVG;
 const ITEMS = [
   {id:'fence', svg:'<svg viewBox="0 0 280 46" width="10.4em" height="1.7em"><path d="M4 12 L10 2 L16 12 V44 H4 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M24 12 L30 2 L36 12 V44 H24 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M44 12 L50 2 L56 12 V44 H44 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M64 12 L70 2 L76 12 V44 H64 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M84 12 L90 2 L96 12 V44 H84 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M104 12 L110 2 L116 12 V44 H104 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M124 12 L130 2 L136 12 V44 H124 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M144 12 L150 2 L156 12 V44 H144 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M164 12 L170 2 L176 12 V44 H164 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M184 12 L190 2 L196 12 V44 H184 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M204 12 L210 2 L216 12 V44 H204 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M224 12 L230 2 L236 12 V44 H224 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M244 12 L250 2 L256 12 V44 H244 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><path d="M264 12 L270 2 L276 12 V44 H264 Z" fill="#E0AA6E" stroke="#8E5C30" stroke-width="1.6"/><rect x="0" y="17" width="280" height="6" rx="2" fill="#8E5C30"/><rect x="0" y="32" width="280" height="6" rx="2" fill="#8E5C30"/></svg>', n:'Забор', c:1, x:50, y:91, s:1},
   {id:'beds', e:'🌱🌱🌱', n:'Грядки', c:2, x:22, y:70, s:.8},
