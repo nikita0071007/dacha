@@ -1226,11 +1226,40 @@ function buildTask(){
   placeGranny(Math.min(85, Math.max(15, t.x + 10)), Math.min(91, Math.max(58, t.y + 12)));
 }
 function whoModal(){
-  openModal('<div class="intro-ico">' + GRANNY_SVG + '</div><h2>Бабушка Марина ждёт помощи</h2><p>Дача совсем заросла, и одной ей не справиться. Кто приехал помогать?</p>'
-    + '<button class="btn" id="whoBoy">👦 Внук</button><button class="btn" id="whoGirl">👧 Внучка</button>');
+  // The real garden remains visible behind the greeting: this is an interactive
+  // first visit, not a prerecorded cinematic or a second character design.
+  say('Ой, кто это к нам пожаловал? Внучок или внученька?');
+  openModal('<div class="intro-ico">' + GRANNY_SVG + '</div><h2>Добро пожаловать на дачу!</h2>'
+    + '<p>Бабушка Марина заметила тебя у калитки. «Ой, кто это к нам приехал? Внучок или внученька?»</p>'
+    + '<button class="btn" id="whoBoy">👦 Я внучок</button> <button class="btn" id="whoGirl">👧 Я внученька</button>');
   $('#sheet').dataset.closable = '0';
-  const pick = w => { S.who = w; save(); closeModal(); pendingLine = 'Ой, ' + WHO().v + ' ' + WHO().came + '! Поможешь мне привести дачу в порядок?'; renderHome(); maybeDaily(); };
-  on('whoBoy', () => pick('boy')); on('whoGirl', () => pick('girl'));
+  const pick = w => {
+    openModal('<div class="intro-ico">' + GRANNY_SVG + '</div><h2>Как тебя зовут?</h2>'
+      + '<p>Марина улыбается: «Как же мне тебя называть?»</p>'
+      + '<label for="visitorName">Твоё имя</label>'
+      + '<input id="visitorName" type="text" maxlength="24" autocomplete="given-name" placeholder="Напиши имя" style="display:block;width:100%;padding:13px;margin:12px 0;border-radius:12px;border:2px solid #D9B784;font:inherit">'
+      + '<button class="btn" id="visitorGo">Обнять бабушку 💛</button>');
+    const finish = () => {
+      const name = ($('#visitorName').value || '').trim().replace(/[<>]/g,'').slice(0,24);
+      S.who = w;
+      S.visitorName = name;
+      save();
+      closeModal();
+      const greeting = w === 'girl' ? 'родная моя' : 'родной мой';
+      pendingLine = 'Ах, ' + (name || WHO().v) + '! Я тебя так ждала, ' + greeting + '! Вместе дачу в порядок приведём!';
+      grannyEl.classList.remove('granny-wave');
+      void grannyEl.offsetWidth;
+      grannyEl.classList.add('granny-wave');
+      setTimeout(() => grannyEl.classList.remove('granny-wave'), 1250);
+      renderHome();
+      maybeDaily();
+    };
+    on('visitorGo', finish);
+    $('#visitorName').addEventListener('keydown', e => { if (e.key === 'Enter') finish(); });
+    $('#visitorName').focus();
+  };
+  on('whoBoy', () => pick('boy'));
+  on('whoGirl', () => pick('girl'));
 }
 function renderHome(justBought){
   fitScene(); renderScene(justBought); renderTask(); renderEvent();
