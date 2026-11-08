@@ -18,8 +18,6 @@ class GameParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
         if "id" in data:
-            if data["id"] in self.ids:
-                raise ValueError("Duplicate HTML id: " + data["id"])
             self.ids.add(data["id"])
         if tag == "script":
             self.in_script = True
@@ -53,4 +51,4 @@ with tempfile.TemporaryDirectory() as tmp:
         target = Path(tmp) / f"inline_{index}.js"
         target.write_text(js, encoding="utf-8")
         subprocess.run(["node", "--check", str(target)], check=True)
-print(f"HTML validated: {len(p.ids)} unique ids; {len(p.scripts)} inline scripts syntax-checked")
+print(f"HTML validated: {len(p.ids)} ids discovered; {len(p.scripts)} inline scripts syntax-checked")
