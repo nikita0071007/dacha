@@ -728,6 +728,11 @@ if (!S.pets.length && (S.pet==='cat'||S.pet==='dog')) S.pets = [S.pet];
 if (!Array.isArray(S.bought)) S.bought = [];
 S.bought = [...new Set(S.bought.filter(id => typeof id==='string'))];
 if (!Array.isArray(S.best)) S.best = [];
+S.best = S.best.slice(0,50).map(n=>Number.isInteger(n)?Math.max(0,Math.min(3,n)):0);
+for(const kind of ['hammer','shuffle']){
+  const n=S.boost[kind];
+  S.boost[kind]=Number.isFinite(n)?Math.max(0,Math.min(999,Math.floor(n))):DEF.boost[kind];
+}
 if (!Array.isArray(S.decor)) S.decor = [];
 S.level = Number.isInteger(S.level) ? Math.max(0,Math.min(50,S.level)) : 0;
 S.stars = Number.isFinite(S.stars) ? Math.max(0,Math.floor(S.stars)) : 0;
