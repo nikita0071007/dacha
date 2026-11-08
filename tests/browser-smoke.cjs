@@ -31,6 +31,15 @@ const path = require('path');
   const intro = await page.evaluate(() => JSON.parse(localStorage.getItem('dacha3v2') || '{}'));
   if (intro.who !== 'boy' || intro.visitorName !== 'Тест') throw new Error('Visitor selection was not saved');
   if (await page.locator('#home').isHidden()) throw new Error('Home not shown after splash');
+  const gardenArt = await page.evaluate(() => {
+    const svg = document.querySelector('#granny .gf svg.gr');
+    const rect = svg && svg.getBoundingClientRect();
+    return { spriteWidth:rect&&rect.width, greenDress:!!(svg&&svg.querySelector('.marina-dress')),
+      landscape:!!document.querySelector('#scene svg.garden-landscape'),
+      gardenVisible:document.querySelector('#scene').getBoundingClientRect().height>200 };
+  });
+  if(!gardenArt.greenDress||!gardenArt.landscape||!gardenArt.gardenVisible||gardenArt.spriteWidth<45)
+    throw new Error('Garden art failed visual sizing checks: '+JSON.stringify(gardenArt));
   await page.screenshot({ path: 'smoke-home.png', fullPage: true });
   await page.locator('#wardrobeBtn').click();
   if (await page.locator('#modal').isHidden()) throw new Error('Wardrobe did not open');
