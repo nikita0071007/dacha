@@ -1102,10 +1102,10 @@ function addPet(){
     d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-pressed','false'); d.setAttribute('aria-label',PETS[k].n + ': услышать голос');
     d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click()}};
     d.onclick = () => {
-      d.classList.remove('pet-react'); void d.offsetWidth; d.classList.add('pet-react');
-      setTimeout(() => d.classList.remove('pet-react'), 900);
+      d.classList.remove('pet-react'); d.setAttribute('aria-pressed','true'); void d.offsetWidth; d.classList.add('pet-react');
+      setTimeout(() => {d.classList.remove('pet-react');d.setAttribute('aria-pressed','false')}, 900);
       petSound(k);
-      const t = document.createElement('div'); t.className = 'pet-say'; t.textContent = PETS[k].say;
+      d.querySelectorAll('.pet-say').forEach(el=>el.remove()); const t = document.createElement('div'); t.className = 'pet-say'; t.textContent = PETS[k].say; t.setAttribute('aria-live','polite');
       d.appendChild(t); setTimeout(() => t.remove(), 1000);
     };
     sceneEl.appendChild(d);
@@ -1186,7 +1186,7 @@ setInterval(() => {
   walkGranny();
   if (Math.random() < .3) say(idleLine(), 3200);
 }, 5500);
-grannyEl.onclick = () => {grannyEl.classList.remove('granny-wave');void grannyEl.offsetWidth;grannyEl.classList.add('granny-wave');setTimeout(()=>grannyEl.classList.remove('granny-wave'),1250);say(Math.random() < .5 ? idleLine() : taskLine(), 3000)};
+grannyEl.setAttribute('role','button'); grannyEl.tabIndex=0; grannyEl.setAttribute('aria-label','Бабушка Марина: поговорить'); grannyEl.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();grannyEl.click()}}; grannyEl.onclick = () => {grannyEl.classList.remove('granny-wave');void grannyEl.offsetWidth;grannyEl.classList.add('granny-wave');setTimeout(()=>grannyEl.classList.remove('granny-wave'),1250);say(Math.random() < .5 ? idleLine() : taskLine(), 3000)};
 
 function fitScene(){ sceneEl.style.fontSize = (sceneEl.clientWidth / 11) + 'px'; }
 window.addEventListener('resize', fitScene);
@@ -2090,7 +2090,7 @@ renderHeader(); renderHome();
 /* Декоративное настроение дачи: отдельный ключ, не меняет прогресс. */
 (function(){const key='dacha_garden_style_v1',options={classic:'🏡 Обычная',flowers:'🌻 Цветущая',evening:'🌇 Вечерняя'};let current='classic';try{const x=localStorage.getItem(key);if(Object.prototype.hasOwnProperty.call(options,x))current=x}catch(e){}function apply(){document.body.dataset.gardenStyle=current}apply();on('gardenStyleBtn',()=>{openModal('<h2>🌼 Настроение дачи</h2><p>Бесплатные варианты оформления. Постройки и звёзды сохраняются.</p><div class="garden-styles">'+Object.entries(options).map(([id,label])=>'<button type="button" data-style="'+id+'" aria-pressed="'+(current===id)+'">'+label+'</button>').join('')+'</div><button class="btn" id="gardenStyleClose">Готово</button>');document.querySelectorAll('.garden-styles button').forEach(b=>b.onclick=()=>{current=b.dataset.style;try{localStorage.setItem(key,current)}catch(e){}apply();document.querySelectorAll('.garden-styles button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});on('gardenStyleClose',closeModal)})})();
 
-setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;sceneEl.querySelectorAll('.it.pet').forEach(d=>{if(Math.random()>.7)return;d.classList.add('pet-moving');d.style.left=(14+Math.random()*72).toFixed(1)+'%';d.style.top=(65+Math.random()*22).toFixed(1)+'%';setTimeout(()=>{if(d.isConnected)d.classList.remove('pet-moving')},1850)})},6500);
+setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;sceneEl.querySelectorAll('.it.pet').forEach(d=>{if(Math.random()>.7)return;d.classList.add('pet-moving');d.style.zIndex='60';d.style.left=(14+Math.random()*72).toFixed(1)+'%';d.style.top=(65+Math.random()*22).toFixed(1)+'%';setTimeout(()=>{if(d.isConnected)d.classList.remove('pet-moving')},1850)})},6500);
 </script>
 </body>
 </html>
