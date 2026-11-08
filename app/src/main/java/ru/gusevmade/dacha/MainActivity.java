@@ -27,8 +27,27 @@ public class MainActivity extends Activity {
         web.loadUrl("file:///android_asset/index.html");
     }
     @Override public void onBackPressed() {
-        if (web != null && web.canGoBack()) web.goBack();
-        else super.onBackPressed();
+        if (web == null) { super.onBackPressed(); return; }
+        // A WebView game has no browser history for its internal scenes.
+        // Keep Android Back consistent with the in-game navigation.
+        web.evaluateJavascript(
+            "(function(){try{" +
+            "var modal=document.getElementById('modal');" +
+            "if(modal&&!modal.hidden){" +
+            "var sheet=document.getElementById('sheet');" +
+            "if(sheet&&sheet.dataset.closable==='0')return 'handled';" +
+            "if(typeof closeModal==='function')closeModal();" +
+            "return 'handled';}" +
+            "var game=document.getElementById('game');" +
+            "if(game&&!game.hidden&&typeof goHome==='function'){goHome();return 'handled';}" +
+            "return 'exit';}catch(e){return 'exit';}})()",
+            result -> {
+                if (!"\"handled\"".equals(result)) {
+                    if (web != null && web.canGoBack()) web.goBack();
+                    else MainActivity.super.onBackPressed();
+                }
+            }
+        );
     }
     @Override protected void onDestroy() {
         if (web != null) { web.destroy(); web = null; }
