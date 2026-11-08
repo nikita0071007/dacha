@@ -1176,13 +1176,14 @@ function placeGranny(x, y){
   grannyEl.classList.toggle('edge-r', x > 70);
 }
 function walkGranny(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const x = 15 + rnd(71), y = 58 + rnd(33);
   grannyEl.classList.add('walk');
   placeGranny(x, y);
   setTimeout(() => grannyEl.classList.remove('walk'), 2400);
 }
 setInterval(() => {
-  if ($('#home').hidden || !$('#modal').hidden) return;
+  if ($('#home').hidden || !$('#modal').hidden || document.hidden) return;
   walkGranny();
   if (Math.random() < .3) say(idleLine(), 3200);
 }, 5500);
@@ -2090,7 +2091,7 @@ renderHeader(); renderHome();
 /* Декоративное настроение дачи: отдельный ключ, не меняет прогресс. */
 (function(){const key='dacha_garden_style_v1',options={classic:'🏡 Обычная',flowers:'🌻 Цветущая',evening:'🌇 Вечерняя'};let current='classic';try{const x=localStorage.getItem(key);if(Object.prototype.hasOwnProperty.call(options,x))current=x}catch(e){}function apply(){document.body.dataset.gardenStyle=current}apply();on('gardenStyleBtn',()=>{openModal('<h2>🌼 Настроение дачи</h2><p>Бесплатные варианты оформления. Постройки и звёзды сохраняются.</p><div class="garden-styles">'+Object.entries(options).map(([id,label])=>'<button type="button" data-style="'+id+'" aria-pressed="'+(current===id)+'">'+label+'</button>').join('')+'</div><button class="btn" id="gardenStyleClose">Готово</button>');document.querySelectorAll('.garden-styles button').forEach(b=>b.onclick=()=>{current=b.dataset.style;try{localStorage.setItem(key,current)}catch(e){}apply();document.querySelectorAll('.garden-styles button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});on('gardenStyleClose',closeModal)})})();
 
-setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;sceneEl.querySelectorAll('.it.pet').forEach(d=>{if(Math.random()>.7)return;d.classList.add('pet-moving');d.style.zIndex='60';d.style.left=(14+Math.random()*72).toFixed(1)+'%';d.style.top=(65+Math.random()*22).toFixed(1)+'%';setTimeout(()=>{if(d.isConnected)d.classList.remove('pet-moving')},1850)})},6500);
+setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;sceneEl.querySelectorAll('.it.pet').forEach(d=>{if(Math.random()>.7)return;d.classList.add('pet-moving');d.style.zIndex='60';d.style.left=(14+Math.random()*72).toFixed(1)+'%';d.style.top=(65+Math.random()*22).toFixed(1)+'%';setTimeout(()=>{if(d.isConnected)d.classList.remove('pet-moving')},1850)})},6500);
 </script>
 </body>
 </html>
