@@ -1257,9 +1257,20 @@ function fenceStage(){
   return Number.isInteger(n)?Math.max(1,Math.min(4,n)):1;
 }
 function fenceArtwork(svg){
-  const effects={2:'sepia(.22) saturate(1.5)',3:'sepia(.2) saturate(1.6) hue-rotate(28deg)',4:'grayscale(.8) brightness(1.55)'};
-  const fx=effects[fenceStage()];
-  return fx?'<span style="display:inline-block;filter:'+fx+'">'+svg+'</span>':svg;
+  const stage=fenceStage();
+  if(stage===1)return svg;
+  const white=stage===4;
+  const paint=white?'#FFF8E8':stage===3?'#D8AE73':'#C58A50';
+  const edge=white?'#B7C5AC':'#86552F';
+  const rails=white?'#E3E8D8':'#96613B';
+  const pickets=Array.from({length:14},(_,i)=>{
+    const x=i*20+4;
+    const tip=stage===3?'Q'+(x+6)+' 0 '+(x+12)+' 12':'L'+(x+6)+' 2 L'+(x+12)+' 12';
+    return '<path d="M'+x+' 44V12'+tip+'V44Z" fill="'+paint+'" stroke="'+edge+'" stroke-width="1.4"/>';
+  }).join('');
+  const gate=white?'<rect x="104" y="17" width="72" height="27" rx="2" fill="#F5F4E7" stroke="#73946B" stroke-width="2"/><path d="M140 17V44M108 23H172M108 36H172" stroke="#73946B" stroke-width="2"/><circle cx="145" cy="32" r="2.4" fill="#C99B43"/><path d="M102 15Q140 -3 178 15" fill="none" stroke="#73946B" stroke-width="3"/>':'';
+  return '<svg viewBox="0 0 280 46" width="10.4em" height="1.7em" role="img" aria-label="'+FENCE_STAGES[stage].n+'">'
+    +pickets+'<rect y="18" width="280" height="5" rx="2" fill="'+rails+'"/><rect y="34" width="280" height="5" rx="2" fill="'+rails+'"/>'+gate+'</svg>';
 }
 function renovateFence(){
   if(!S.bought.includes('fence')||fenceStage()>=4)return;
