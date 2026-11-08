@@ -1229,12 +1229,43 @@ function renovateFence(){
   pendingLine='Какой красивый забор, '+VISITOR()+'! '+next.n+'!';
   renderHome('fence');
 }
+
+// House is visibly ruined at first; existing saves with 'house' remain repaired.
+const HOUSE_STAGES=[
+  {n:'Заброшенный дом',c:0,art:'🏚️'},
+  {n:'Починить стены',c:3,art:'🏚️'},
+  {n:'Починить крышу',c:5,art:'🏠'},
+  {n:'Поставить новые окна',c:7,art:'🏠'},
+  {n:'Обновить крыльцо',c:9,art:'🏡'},
+  {n:'Светлый фасад и зелёные ставни',c:12,art:'🏡'}
+];
+function houseStage(){
+  if(!S.bought.includes('house'))return 0;
+  const n=Number(S.houseStage);
+  return Number.isInteger(n)?Math.max(1,Math.min(5,n)):1;
+}
+function houseArtwork(){
+  const stage=houseStage();
+  const name=HOUSE_STAGES[stage].n;
+  const effects=['grayscale(.7) brightness(.75)','sepia(.45) brightness(.88)','sepia(.3)','saturate(.9)','saturate(1.15)','saturate(1.3)'];
+  return '<span title="'+name+'" aria-label="'+name+'" style="display:inline-block;filter:'+effects[stage]+'">'+HOUSE_STAGES[stage].art+'</span>';
+}
+function renovateHouse(){
+  if(!S.bought.includes('house')||houseStage()>=5)return;
+  const next=HOUSE_STAGES[houseStage()+1];
+  if(S.stars<next.c){toast('Для ремонта домика нужно ещё ⭐ '+(next.c-S.stars));return;}
+  S.stars-=next.c;
+  S.houseStage=houseStage()+1;
+  save();SFX.coin();renderHeader();
+  pendingLine='Спасибо, '+VISITOR()+'! '+next.n+' — теперь у нас уютнее!';
+  renderHome('house');
+}
 function renderScene(justBought){
   sceneEl.querySelectorAll('.it').forEach(e => e.remove());
   const task = currentTask();
   ITEMS.forEach(it => {
     const has = S.bought.includes(it.id), isTask = !has && task && task.id === it.id;
-    let txt = has ? (it.id === 'fence' ? fenceArtwork(art(it)) : art(it)) : (it.pre || (isTask ? art(it) : null));
+    let txt = it.id === 'house' ? houseArtwork() : (has ? (it.id === 'fence' ? fenceArtwork(art(it)) : art(it)) : (it.pre || (isTask ? art(it) : null)));
     if (!txt) return;
     const d = document.createElement('div');
     d.className = 'it' + (isTask && !it.pre ? ' ghost' : '') + (it.id === justBought ? ' new' : '');
@@ -1249,11 +1280,11 @@ function renderScene(justBought){
 function renderTask(){
   const t = currentTask(), el = $('#task');
   $('#progBar').style.width = (S.bought.length / ITEMS.length * 100) + '%';
-  if (!t) { el.innerHTML = '<div class="ti">🎉</div><div class="tt"><b>Дача готова!</b><small>Построено ' + ITEMS.length + ' из ' + ITEMS.length + '</small></div>'; return; }
-  const can = S.stars >= t.c;
+  if (!t) { el.innerHTML = '<div class="ti">🎉</div><div class="tt"><b>Основные постройки готовы!</b><small>Продолжай улучшать дом и забор.</small></div>'; }
+  if(t){const can = S.stars >= t.c;
   el.innerHTML = '<div class="ti">' + (t.svg || t.e.slice(0, 2)) + '</div><div class="tt"><b>' + t.n + '</b><small>Задание бабушки. Построено ' + S.bought.length + ' из ' + ITEMS.length + '</small></div>'
     + '<button class="btn alt tb' + (can ? '' : ' need') + '" id="buildBtn">Построить ⭐ ' + t.c + '</button>';
-  on('buildBtn', buildTask);
+  on('buildBtn', buildTask); }
   if(S.bought.includes('fence') && fenceStage()<4){
     const next=FENCE_STAGES[fenceStage()+1];
     const button=document.createElement('button');
@@ -1261,6 +1292,15 @@ function renderTask(){
     button.textContent='🪵 '+next.n+' ⭐ '+next.c;
     button.setAttribute('aria-label','Улучшить забор: '+next.n+', '+next.c+' звёзд');
     button.onclick=renovateFence;
+    el.appendChild(button);
+  }
+  if(S.bought.includes('house') && houseStage()<5){
+    const next=HOUSE_STAGES[houseStage()+1];
+    const button=document.createElement('button');
+    button.className='btn alt tb';
+    button.textContent='🏠 '+next.n+' ⭐ '+next.c;
+    button.setAttribute('aria-label','Улучшить дом: '+next.n+', '+next.c+' звёзд');
+    button.onclick=renovateHouse;
     el.appendChild(button);
   }
 }
