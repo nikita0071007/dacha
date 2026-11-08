@@ -22,6 +22,8 @@ const path = require('path');
   await splashPlay.waitFor({ state: 'visible', timeout: 15000 });
   await splashPlay.click();
   await page.waitForTimeout(600);
+  if (await page.locator('#whoBoy').count()) await page.locator('#whoBoy').click();
+  if (await page.locator('#modal').isVisible()) await page.locator('#modal').evaluate(el => { el.hidden = true; });
   if (await page.locator('#home').isHidden()) throw new Error('Home not shown after splash');
   await page.locator('#wardrobeBtn').click();
   if (await page.locator('#modal').isHidden()) throw new Error('Wardrobe did not open');
