@@ -721,9 +721,18 @@ const DEF = {pets:[], infUntil:0, infOfferShown:0, pass:null, decor:[], dLast:nu
 let S;
 try { S = JSON.parse(localStorage.getItem('dacha3v2') || 'null'); } catch(e) { S = null; }
 S = Object.assign(JSON.parse(JSON.stringify(DEF)), S || {});
-S.boost = Object.assign({}, DEF.boost, S.boost || {});
+S.boost = Object.assign({}, DEF.boost, S.boost && typeof S.boost==='object' ? S.boost : {});
 if (!Array.isArray(S.pets)) S.pets = [];
-if (!S.pets.length && S.pet) S.pets = [S.pet];
+S.pets = [...new Set(S.pets.filter(p => p==='cat'||p==='dog'))];
+if (!S.pets.length && (S.pet==='cat'||S.pet==='dog')) S.pets = [S.pet];
+if (!Array.isArray(S.bought)) S.bought = [];
+S.bought = [...new Set(S.bought.filter(id => typeof id==='string'))];
+if (!Array.isArray(S.best)) S.best = [];
+if (!Array.isArray(S.decor)) S.decor = [];
+S.level = Number.isInteger(S.level) ? Math.max(0,Math.min(50,S.level)) : 0;
+S.stars = Number.isFinite(S.stars) ? Math.max(0,Math.floor(S.stars)) : 0;
+S.lives = Number.isFinite(S.lives) ? Math.max(0,Math.min(MAX_LIVES,Math.floor(S.lives))) : MAX_LIVES;
+S.lifeTs = Number.isFinite(S.lifeTs) ? S.lifeTs : Date.now();
 function save(){ try { localStorage.setItem('dacha3v2', JSON.stringify(S)); } catch(e) {} }
 
 /* ---------- звук ---------- */
