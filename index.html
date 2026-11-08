@@ -734,6 +734,8 @@ S.stars = Number.isFinite(S.stars) ? Math.max(0,Math.floor(S.stars)) : 0;
 S.lives = Number.isFinite(S.lives) ? Math.max(0,Math.min(MAX_LIVES,Math.floor(S.lives))) : MAX_LIVES;
 S.lifeTs = Number.isFinite(S.lifeTs) ? S.lifeTs : Date.now();
 function save(){ try { localStorage.setItem('dacha3v2', JSON.stringify(S)); } catch(e) {} }
+// Persist normalized state so subsequent launches cannot resurrect invalid data.
+save();
 
 /* ---------- звук ---------- */
 let AC = null;
