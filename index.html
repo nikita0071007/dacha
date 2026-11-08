@@ -1517,7 +1517,7 @@ function genBoard(boxes){
     }
     let k = 0;
     while (k < (boxes || 0)) { const r = rnd(4), c = rnd(N); if (!isBox(B[r][c])) { B[r][c] = makeBox(); k++; } }
-  } while (!hasMove(B));
+  } while (findRuns(B).length || !hasMove(B));
   return B;
 }
 function weedSet(p){
