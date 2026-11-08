@@ -49,8 +49,21 @@ public class MainActivity extends Activity {
             }
         );
     }
+    @Override protected void onPause() {
+        if (web != null) web.onPause();
+        super.onPause();
+    }
+    @Override protected void onResume() {
+        super.onResume();
+        if (web != null) web.onResume();
+    }
     @Override protected void onDestroy() {
-        if (web != null) { web.destroy(); web = null; }
+        if (web != null) {
+            web.stopLoading();
+            web.loadUrl("about:blank");
+            web.destroy();
+            web = null;
+        }
         super.onDestroy();
     }
 }
