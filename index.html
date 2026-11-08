@@ -1321,7 +1321,18 @@ function renderScene(justBought){
     d.className = 'it' + (isTask && !it.pre ? ' ghost' : '') + (it.id === justBought ? ' new' : '');
     d.style.left = it.x + '%'; d.style.top = it.y + '%'; d.style.fontSize = it.s + 'em'; d.style.zIndex = Math.round(it.y);
     d.innerHTML = '<span>' + txt + '</span>';
-    if (isTask) { d.onclick = buildTask; d.setAttribute('aria-label', it.n); }
+    if (isTask) { d.onclick = buildTask; d.setAttribute('role','button'); d.tabIndex=0; d.setAttribute('aria-label', it.n + ': построить за звёзды'); }
+    if (it.id==='house' && has && houseStage()<5) {
+      d.onclick=renovateHouse;
+      d.setAttribute('role','button');d.tabIndex=0;
+      d.setAttribute('aria-label','Дом: '+HOUSE_STAGES[houseStage()+1].n+', '+HOUSE_STAGES[houseStage()+1].c+' звёзд');
+    }
+    if (it.id==='fence' && has && fenceStage()<4) {
+      d.onclick=renovateFence;
+      d.setAttribute('role','button');d.tabIndex=0;
+      d.setAttribute('aria-label','Забор: '+FENCE_STAGES[fenceStage()+1].n+', '+FENCE_STAGES[fenceStage()+1].c+' звёзд');
+    }
+    if(d.onclick)d.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click()}};
     sceneEl.appendChild(d);
   });
   addPet();
