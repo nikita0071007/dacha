@@ -10,6 +10,8 @@ class GameParser(HTMLParser):
     def __init__(self):
         super().__init__()
         self.ids = set()
+        self.duplicate_ids = set()
+        self.external_scripts = []
         self.scripts = []
         self.in_script = False
         self.script_external = False
@@ -18,10 +20,14 @@ class GameParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         data = dict(attrs)
         if "id" in data:
+            if data["id"] in self.ids:
+                self.duplicate_ids.add(data["id"])
             self.ids.add(data["id"])
         if tag == "script":
             self.in_script = True
             self.script_external = "src" in data
+            if self.script_external:
+                self.external_scripts.append(data["src"])
             self.current = []
 
     def handle_data(self, data):
@@ -39,6 +45,10 @@ if not game.exists():
     sys.exit("Missing index.html")
 p = GameParser()
 p.feed(game.read_text(encoding="utf-8"))
+if p.duplicate_ids:
+    sys.exit("Duplicate HTML IDs: " + ", ".join(sorted(p.duplicate_ids)))
+if any(src.startswith(("http://", "https://", "//")) for src in p.external_scripts):
+    sys.exit("External scripts are incompatible with offline APK")
 for required in ("home", "game", "scene", "granny", "wardrobeBtn", "gardenStyleBtn", "musicBtn", "soundBtn"):
     if required not in p.ids:
         sys.exit("Missing game UI element: " + required)
@@ -72,6 +82,8 @@ checks = {
     "direct fence repair": "d.onclick=renovateFence",
     "save data recovery": "if (!Array.isArray(S.bought)) S.bought = [];",
     "persist visitor name": "S.visitorName = name;",
+    "level unlock guard": "i>S.level",
+    "clock-safe life recovery": "if(S.lifeTs>now)S.lifeTs=now",
 }
 for name, token in checks.items():
     if token not in source:
