@@ -84,6 +84,9 @@ checks = {
     "persist visitor name": "S.visitorName = name;",
     "level unlock guard": "i>S.level",
     "clock-safe life recovery": "if(S.lifeTs>now)S.lifeTs=now",
+    "save recovery persisted": "save();\n\n/* ---------- звук ---------- */",
+    "modal closability reset": "dataset.closable = '1'",
+    "safe level launch": "Этот уровень пока недоступен",
 }
 for name, token in checks.items():
     if token not in source:
