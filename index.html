@@ -482,7 +482,7 @@ body.supporter .granny .g, body.supporter .sp-granny .gw{filter:drop-shadow(0 0 
 body.supporter .granny .g::before, body.supporter .sp-granny .gw::before{content:"👑";position:absolute;left:50%;top:-.42em;transform:translateX(-50%) rotate(-8deg);font-size:.42em;filter:drop-shadow(0 1px 1px rgba(0,0,0,.4));z-index:2}
 body.supporter .granny .g, body.supporter .sp-granny .gw{position:relative}
 body.supporter .granny .gname::after{content:" ✨"}
-</style>
+body[data-marina-outfit="spring"] #granny svg.gr{filter:hue-rotate(65deg) saturate(1.2)}body[data-marina-outfit="autumn"] #granny svg.gr{filter:sepia(.4) hue-rotate(-20deg) saturate(1.3)}.marina-outfits{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}.marina-outfits button{flex:1;min-width:80px;padding:12px 5px;border-radius:12px;border:2px solid var(--wood2);background:var(--paper);color:var(--ink);font:inherit}.marina-outfits button[aria-pressed="true"]{outline:3px solid var(--sun)}</style>
 </head>
 <body>
 <noscript><div style="position:fixed;left:0;right:0;top:0;z-index:300;background:#FFF1B8;color:#5A4300;padding:14px 16px;font:600 15px/1.4 sans-serif;text-align:center">
@@ -541,7 +541,7 @@ body.supporter .granny .gname::after{content:" ✨"}
     <button class="chip" id="soundBtn" aria-label="Звук">🔊</button>
     <button class="chip" id="shopBtn">🛒</button>
     <button class="chip" id="supportBtn" hidden aria-label="Поддержать автора">💛</button>
-    <button class="chip" id="petBtn" aria-label="Питомцы">🐾</button>
+    <button class="chip" id="wardrobeBtn" aria-label="Гардероб Марины">👒</button><button class="chip" id="petBtn" aria-label="Питомцы">🐾</button>
     <button class="chip money" id="moneyBtn" aria-pressed="false" aria-label="Где деньги">💰<span class="lbl"> Где деньги</span></button>
   </div>
 
@@ -2069,6 +2069,9 @@ if (!PLATFORM.pay) {
 }
 
 renderHeader(); renderHome();
+
+/* Бесплатный гардероб Марины: сохраняется отдельно от прогресса. */
+(function(){const key='dacha_marina_outfit_v1',names={classic:'🧣 Классика',spring:'🌷 Весна',autumn:'🍂 Осень'};let current='classic';try{let x=localStorage.getItem(key);if(Object.prototype.hasOwnProperty.call(names,x))current=x}catch(e){}function apply(){document.body.dataset.marinaOutfit=current}apply();on('wardrobeBtn',()=>{openModal('<h2>👒 Гардероб Марины</h2><p>Все наряды бесплатные и не влияют на игру.</p><div class="marina-outfits">'+Object.entries(names).map(([id,label])=>'<button type="button" data-outfit="'+id+'" aria-pressed="'+(id===current)+'">'+label+'</button>').join('')+'</div><button class="btn" id="wardrobeClose">Готово</button>');document.querySelectorAll('.marina-outfits button').forEach(b=>b.onclick=()=>{current=b.dataset.outfit;try{localStorage.setItem(key,current)}catch(e){}apply();document.querySelectorAll('.marina-outfits button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});on('wardrobeClose',closeModal)})})();
 </script>
 </body>
 </html>
