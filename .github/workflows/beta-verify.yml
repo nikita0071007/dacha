@@ -22,6 +22,8 @@ jobs:
         run: node tools/beta-layout.cjs beta/index.html beta/verify-out
       - name: Verify vegetable and fruit blocks
         run: node tools/beta-harvest.cjs beta/index.html beta/verify-out
+      - name: Check WebAudio samples
+        run: node tools/beta-music.cjs beta/index.html
       - name: Verify named pets and choice persistence
         run: node tools/beta-pets.cjs beta/index.html
       - name: Verify developer letter on three screens

@@ -1,0 +1,13 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path');
+(async()=>{const b=await chromium.launch({args:['--no-sandbox']});const p=await b.newPage();
+await p.addInitScript(()=>localStorage.setItem('dacha3v2',JSON.stringify({who:'girl',level:0,stars:0})));
+const errors=[];p.on('pageerror',e=>errors.push(e.message));
+await p.goto('file://'+path.resolve(process.argv[2]||'beta/index.html'));
+assert.equal(await p.evaluate(()=>window.BetaMusic.unlocked),false);
+assert.equal(await p.evaluate(()=>MUS.cur),null);
+await p.locator('#spPlay').click();await p.evaluate(()=>{try{closeModal()}catch(e){}});
+await p.locator('#betaSettingsBtn').click();
+for(const id of ['sampleSplash','sampleHome','sampleLevel','sampleVictory'])await p.locator('#'+id).click();
+assert.equal(await p.evaluate(()=>window.BetaMusic.unlocked),true);
+assert.equal(errors.length,0,errors.join('; '));console.log('PASS WebAudio 4 samples');await b.close();
+})().catch(e=>{console.error(e);process.exit(1)});

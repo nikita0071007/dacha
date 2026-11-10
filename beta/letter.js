@@ -17,7 +17,8 @@ const NIKITA_LETTER = `Дорогая бабушка Марина Борисов
     $('#betaLetterClose').focus();
   };
   const showSettings = () => {
-    openModal('<div class="beta-info-menu"><h2>⚙️ Настройки</h2><p>Музыка и звуки настраиваются кнопками в верхней панели.</p><button type="button" class="btn alt" id="betaSettingsLetter">✉️ Письмо от Никиты</button><button type="button" class="btn" id="betaSettingsClose">Закрыть</button></div>');
+    openModal('<div class="beta-info-menu"><h2>⚙️ Настройки</h2><p>Музыка и звуки настраиваются кнопками в верхней панели.</p><p>Музыка: мягкий WebAudio-синтез, не живая запись. Послушать:</p><div class="beta-music-samples"><button type="button" id="sampleSplash">Заставка</button><button type="button" id="sampleHome">Дача</button><button type="button" id="sampleLevel">Уровень</button><button type="button" id="sampleVictory">Победа</button></div><button type="button" class="btn alt" id="betaSettingsLetter">✉️ Письмо от Никиты</button><button type="button" class="btn" id="betaSettingsClose">Закрыть</button></div>');
+    [['sampleSplash','splash'],['sampleHome','home'],['sampleLevel','level'],['sampleVictory','victory']].forEach(([id,name])=>{$('#'+id).onclick=()=>window.BetaMusic.preview(name);});
     $('#betaSettingsLetter').onclick = showLetter;
     $('#betaSettingsClose').onclick = closeModal;
     $('#betaSettingsLetter').focus();
