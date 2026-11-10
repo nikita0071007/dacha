@@ -68,7 +68,7 @@ print(f"HTML validated: {len(p.ids)} ids discovered; {len(p.scripts)} inline scr
 # Regression guards for the agreed visual and gameplay progression.
 source = game.read_text(encoding="utf-8")
 checks = {
-    "six produce types": "['🍅','🥕','🥒','🍓','🥬','🍎']",
+    "six vegetables (no fruit)": "['🍅','🥕','🥒','🥬','🫑','🫜']",
     "house stage persistence": "S.houseStage=houseStage()+1",
     "house progression": "const HOUSE_STAGES=[",
     "ruined house damage": "const damage=stage===0?",

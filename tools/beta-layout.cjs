@@ -17,7 +17,7 @@ fs.mkdirSync(output, { recursive: true });
     await page.evaluate(()=>{try{closeModal()}catch(e){};renderHome();});
     const metrics=await page.evaluate(()=>{
       const rect=q=>{const e=document.querySelector(q);if(!e)return null;const r=e.getBoundingClientRect();return {w:Math.round(r.width),h:Math.round(r.height),x:Math.round(r.x),y:Math.round(r.y)};};
-      const house=rect('#scene .it[data-item="house"] svg'), marina=rect('#scene #granny .mimg'), cat=rect('#scene .it.pet.cat .pimg'),dog=rect('#scene .it.pet.dog .pimg');
+      const house=rect('#scene .it[data-item="house"] svg'), marina=rect('#scene #granny .marina-rig'), cat=rect('#scene .it.pet.cat .pimg'),dog=rect('#scene .it.pet.dog .pimg');
       return {house,marina,cat,dog,scene:rect('#scene'),scrollWidth:document.documentElement.scrollWidth,innerWidth,estimatedDoorHeight:house?house.h*25/76:null};
     });
     const ok=metrics.house&&metrics.marina&&metrics.cat&&metrics.dog&&
