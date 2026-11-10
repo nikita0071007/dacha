@@ -2,3 +2,23 @@
 .tile.locked{background:radial-gradient(circle,rgba(255,220,90,.45),transparent 76%)}
 .tile.locked.cracked{filter:brightness(1.18)}
 .tile.rotten{cursor:not-allowed!important;filter:saturate(.72) grayscale(.18)}
+
+/* Step 1c: soft idle, match collapse, springy fall and joyful powerups. */
+.tile:not(.s-sun):not(.pop):not(.born):not(.sel):not(.box):not(.rotten):not(.locked)>span{
+  animation:harvest-idle 3.2s ease-in-out infinite;
+  animation-delay:calc(var(--tile-stagger, 0) * -1s);
+  transform-origin:50% 85%;
+}
+@keyframes harvest-idle{0%,100%{transform:rotate(-2.2deg) scale(.99)}50%{transform:rotate(2.2deg) scale(1.025)}}
+.tile.pop{transition:transform .22s cubic-bezier(.5,0,.8,.2),opacity .24s ease!important;transform:scale(.05) rotate(18deg)!important;opacity:0!important}
+.tile.pop>span{animation:harvest-collect .22s ease-in forwards!important}
+@keyframes harvest-collect{0%{transform:scale(1.08)}55%{transform:scale(.88)}100%{transform:scale(.08) rotate(15deg)}}
+.tile{transition:top .34s cubic-bezier(.2,.78,.23,1.22),left .23s ease,transform .2s ease,opacity .2s ease!important}
+.tile.born>span{animation:harvest-celebrate .5s cubic-bezier(.15,.7,.3,1.5) both!important}
+@keyframes harvest-celebrate{0%{transform:scale(.6) rotate(-12deg)}55%{transform:scale(1.22) rotate(7deg)}100%{transform:scale(1)}}
+.tile.s-row>span,.tile.s-col>span{animation:harvest-ready 1.7s ease-in-out infinite}
+@keyframes harvest-ready{50%{transform:scale(1.12) rotate(4deg)}}
+@media(prefers-reduced-motion:reduce){
+  .tile,.tile>span{animation:none!important;transition:none!important}
+  .tile.pop{opacity:0!important;transform:scale(.05)!important}
+}
