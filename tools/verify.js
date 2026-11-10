@@ -83,10 +83,15 @@ const src = fs.readFileSync(file, 'utf8');
     if (!has) add(null, 'Бот по уровням', 'в файле нет функций startLevel/trySwap/findRuns: бот не запущен (возможно, сменился движок)');
     else {
       let won = 0, played = 0, stuck = 0;
+      const results = [], trials = Math.max(1,Math.min(10,Number(process.env.BETA_BOT_TRIALS||3)));
       for (let L = 1; L <= LEVELS; L++) {
+        let levelWins=0;
+        for(let trial=0;trial<trials;trial++){
         const res = await p.evaluate(async (L) => {
           try { closeModal(); } catch (x) {}
           try { startLevel(L - 1); } catch (x) { return 'ошибка запуска'; }
+          // Bot may dismiss tutorial and harvest transition explicitly.
+          try { const confirm=document.getElementById('nextHarvest')||document.getElementById('okIntro'); if(confirm)confirm.click(); else closeModal(); if(G) G.busy=false; } catch(x) {}
           await new Promise(r => setTimeout(r, 300));
           let stuckTries = 0;
           for (let g = 0; g < 60; g++) {
@@ -94,7 +99,11 @@ const src = fs.readFileSync(file, 'utf8');
             const B = G.board; let best = null;
             for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) for (const [dr, dc] of [[0, 1], [1, 0]]) {
               const y = r + dr, x = c + dc; if (y >= N || x >= N) continue; const A = B[r][c], T = B[y][x]; if (!A || !T || isBox(A) || isBox(T)) continue;
-              let sc = 0; if (A.s === 'sun' || T.s === 'sun') sc = 30; else { swapIn(B, r, c, y, x); const runs = findRuns(B); swapIn(B, y, x, r, c); if (!runs.length) continue; for (const run of runs) { sc += run.cells.length * 2; for (const [rr, cc] of run.cells) { const t = B[rr][cc]; if (t && G.goals[t.t] > 0) sc += 6; if (G.weeds && G.weeds.has(rr * N + cc)) sc += 8; } } }
+              let sc = 0; if (A.s === 'sun' || T.s === 'sun') sc = 30; else { swapIn(B, r, c, y, x); const runs = findRuns(B); swapIn(B, y, x, r, c); if (!runs.length) continue; for (const run of runs) { sc += run.cells.length * 2; for (const [rr, cc] of run.cells) { const t = B[rr][cc]; if (t && G.goals[t.t] > 0) sc += 6; if (G.weeds && G.weeds.has(rr * N + cc)) sc += 8;
+                  for(const [dy,dx] of [[0,1],[1,0],[0,-1],[-1,0]]){
+                    const yy=rr+dy,xx=cc+dx;if(yy<0||yy>=N||xx<0||xx>=N)continue;
+                    const adjacent=B[yy][xx];if(adjacent&&isBox(adjacent)&&adjacent.kind!=='rot')sc+=7;
+                  } } } }
               if (!best || sc > best.sc) best = { sc, a: [r, c], b: [y, x] };
             }
             if (!best) { stuckTries = (stuckTries || 0) + 1; if (stuckTries > 6) return 'stuck'; await new Promise(r => setTimeout(r, 400)); g--; continue; }
@@ -103,8 +112,20 @@ const src = fs.readFileSync(file, 'utf8');
           }
           return 'lose';
         }, L).catch(x => 'ошибка: ' + String(x).slice(0, 60));
-        played++; if (res === 'win') won++; if (res === 'stuck' || /ошибка/.test(res)) { stuck++; console.log('  уровень', L, res); }
+        played++; if (res === 'win') {won++;levelWins++;}
+        if (res === 'stuck' || /ошибка/.test(res)) { stuck++; console.log('  уровень', L, 'проба', trial+1, res); }
+        }
+        const meta=await p.evaluate(n=>{
+          const l=LEVELS[n-1];return {moves:l.moves,goal:JSON.stringify(l.goals),mechanics:(l.mechanics||[]).join(', ')||'без препятствий'};
+        },L);
+        results.push({level:L,...meta,wins:levelWins,attempts:trials,winPercent:Math.round(levelWins*100/trials)});
+        console.log('  Уровень '+L+': '+levelWins+'/'+trials+' ('+Math.round(levelWins*100/trials)+'%)');
       }
+      const csv=['level,moves,goals,mechanics,wins,attempts,win_percent'];
+      const csvEsc=x=>'"'+String(x).replace(/"/g,'""')+'"';
+      for(const r of results)csv.push([r.level,r.moves,csvEsc(r.goal),csvEsc(r.mechanics),r.wins,r.attempts,r.winPercent].join(','));
+      fs.writeFileSync(OUT+'/bot-levels.csv',csv.join('\n')+'\n');
+      fs.writeFileSync(OUT+'/bot-levels.json',JSON.stringify(results,null,2));
       add(!e.length && stuck === 0, 'Бот прошёл уровни без зависаний и ошибок', `сыграно ${played}, выиграно ботом ${won} (простой бот: цифра нужна только для сравнения с main, не как оценка сложности), зависаний ${stuck}` + (e.length ? ', ошибки: ' + e[0] : ''));
     }
     await c.close();

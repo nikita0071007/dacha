@@ -110,14 +110,76 @@
     }
     return ORIGINAL.finishTurn();
   };
+
+  // Step 1d. Two disjoint six-piece sets. Numbers 0–5 are reused only inside each block.
+  // Existing SVGs provide consistent highlight and outline; new pieces use the same 64x64 canvas.
+  const baseSvg=VEG.slice();
+  const art=(id,a,b,body)=>'<svg viewBox="0 0 64 64" width="1em" height="1em" role="img" aria-label="'+id+'">'
+    +'<defs><radialGradient id="v2-'+id+'" cx=".3" cy=".24" r=".82"><stop stop-color="'+a+'"/><stop offset=".56" stop-color="'+b+'"/><stop offset="1" stop-color="#442839"/></radialGradient></defs>'
+    +'<ellipse cx="32" cy="59" rx="18" ry="3" fill="#33271B" opacity=".13"/>'
+    +body+'</svg>';
+  const pepper=art('pepper','#FFEAA3','#D93227',
+    '<path d="M32 19C10 12 5 34 11 47Q14 59 26 55Q33 60 39 55Q52 58 56 44Q60 18 38 18Q35 17 32 19Z" fill="url(#v2-pepper)" stroke="#A22E1F" stroke-width="2"/>'
+    +'<path d="M31 20Q27 12 32 7Q40 7 39 16Q46 14 49 20Q40 17 35 23Z" fill="#43863B" stroke="#276039" stroke-width="1.4"/>'
+    +'<path d="M18 28Q12 39 20 48M44 24Q54 37 47 48" fill="none" stroke="#A83324" stroke-width="2" opacity=".6"/>'
+    +'<ellipse cx="21" cy="31" rx="5" ry="11" fill="#FFF4C8" opacity=".64" transform="rotate(32 21 31)"/>');
+  const beet=art('beet','#FF99C9','#992058',
+    '<path d="M31 18C10 14 7 35 19 50Q26 58 30 58Q36 58 44 49Q57 28 41 20Q37 18 31 18Z" fill="url(#v2-beet)" stroke="#752044" stroke-width="2.3"/>'
+    +'<path d="M30 19Q18 8 22 3Q30 4 33 16Q37 4 44 4Q47 11 35 20Q19 12 9 17Q15 5 30 19Z" fill="#599B49" stroke="#346B3D" stroke-width="1.6"/>'
+    +'<path d="M30 57l-4 5" stroke="#9B5070" stroke-width="2.8"/><ellipse cx="22" cy="29" rx="6" ry="10" fill="#FFD4EC" opacity=".56" transform="rotate(30 22 29)"/>');
+  const pear=art('pear','#FFF5B2','#91B32F',
+    '<path d="M32 9l3-5" fill="none" stroke="#71522F" stroke-width="4" stroke-linecap="round"/>'
+    +'<path d="M35 9Q47 3 53 12Q42 17 35 14Z" fill="#68A746" stroke="#2D733B" stroke-width="1.6"/>'
+    +'<path d="M28 15Q31 22 21 30Q11 36 10 45Q8 58 29 58Q56 61 55 44Q54 35 44 27Q37 21 40 15Q33 10 28 15Z" fill="url(#v2-pear)" stroke="#6F8227" stroke-width="2"/>'
+    +'<ellipse cx="21" cy="38" rx="6" ry="11" fill="#FFFDE3" opacity=".65" transform="rotate(25 21 38)"/>');
+  const cherry=art('cherry','#FF9A8B','#C51E30',
+    '<path d="M31 17Q19 12 18 4M31 17Q49 9 44 3" stroke="#498B3B" stroke-width="3" fill="none"/>'
+    +'<path d="M31 15Q26 1 38 4Q47 11 31 15Z" fill="#5CAD46" stroke="#2C7B39" stroke-width="1.5"/>'
+    +'<circle cx="19" cy="40" r="14" fill="url(#v2-cherry)" stroke="#8E182C" stroke-width="2"/>'
+    +'<circle cx="45" cy="42" r="14" fill="url(#v2-cherry)" stroke="#8E182C" stroke-width="2"/>'
+    +'<ellipse cx="13" cy="33" rx="4" ry="7" fill="#FFE1D7" opacity=".7" transform="rotate(28 13 33)"/>'
+    +'<ellipse cx="39" cy="35" rx="4" ry="7" fill="#FFE1D7" opacity=".64" transform="rotate(28 39 35)"/>');
+  const plum=art('plum','#D5AAFF','#7342AB',
+    '<path d="M32 13l4-8" stroke="#6C6130" stroke-width="3.5" stroke-linecap="round"/>'
+    +'<path d="M32 15Q23 8 17 13Q21 22 32 18Z" fill="#5DA447" stroke="#286A38" stroke-width="1.8"/>'
+    +'<path d="M32 17Q15 13 10 32Q6 48 22 56Q32 61 42 55Q60 45 53 28Q46 12 32 17Z" fill="url(#v2-plum)" stroke="#502F7E" stroke-width="2.5"/>'
+    +'<path d="M32 21Q39 37 32 55" stroke="#4F3679" stroke-width="2" fill="none" opacity=".5"/>'
+    +'<ellipse cx="21" cy="29" rx="6" ry="11" fill="#EEE1FF" opacity=".63" transform="rotate(26 21 29)"/>');
+  const grapes=art('grapes','#E1B7FF','#8342B1',
+    '<path d="M32 15l-3-9M32 15Q37 3 49 7Q47 17 32 19Z" fill="#519743" stroke="#33743A" stroke-width="2"/>'
+    +'<g fill="url(#v2-grapes)" stroke="#60318B" stroke-width="1.5">'
+    +'<circle cx="23" cy="27" r="9"/><circle cx="36" cy="25" r="9"/><circle cx="44" cy="35" r="9"/>'
+    +'<circle cx="16" cy="39" r="9"/><circle cx="30" cy="39" r="9"/><circle cx="37" cy="49" r="9"/>'
+    +'<circle cx="23" cy="51" r="9"/></g><g fill="#FFF2FF" opacity=".65"><circle cx="20" cy="23" r="3"/><circle cx="34" cy="21" r="3"/><circle cx="12" cy="36" r="3"/><circle cx="28" cy="35" r="3"/></g>');
+  const vegetableSet={names:['🍅','🥕','🥒','🥬','🫑','🫜'],icons:[baseSvg[0],baseSvg[1],baseSvg[2],baseSvg[4],pepper,beet]};
+  const fruitSet={names:['🍎','🍐','🍓','🍒','🟣','🍇'],icons:[baseSvg[5],pear,baseSvg[3],cherry,plum,grapes]};
+  function setProduce(level){
+    const fruit=Math.floor(level/10)%2===1,pack=fruit?fruitSet:vegetableSet;
+    TYPES.splice(0,TYPES.length,...pack.names);
+    VEG.splice(0,VEG.length,...pack.icons);
+    document.documentElement.dataset.harvest=fruit?'fruit':'vegetable';
+  }
+
   startLevel=function(i){
     activeLevel=i;
+    setProduce(i);
     const ret=ORIGINAL.startLevel(i);
     if(G&&G.lvl===i){
       const L=LEVELS[i];
       if(L.locks)G.goals.lock=extraBlocks(G.board);
       G.pests=!!L.pests;G.pestTurns=0;
       renderGoals();
+      if(i>0&&i%10===0&&!(S.betaHarvestIntroduced||[]).includes(i)){
+        G.busy=true;
+        const fruit=Math.floor(i/10)%2===1;
+        openModal('<div class="intro-ico">'+(fruit?'🍎🍐🍓':'🍅🥕🥬')+'</div><h2>Теперь собираем '+(fruit?'фрукты':'овощи')+'!</h2><p>Новый урожай на даче! В этом десятке уровней все шесть фишек — '+(fruit?'фрукты':'овощи')+'.</p><button class="btn" id="nextHarvest">Начать сбор</button>');
+        $('#sheet').dataset.closable='0';
+        on('nextHarvest',()=>{
+          S.betaHarvestIntroduced=Array.isArray(S.betaHarvestIntroduced)?S.betaHarvestIntroduced:[];
+          if(!S.betaHarvestIntroduced.includes(i))S.betaHarvestIntroduced.push(i);
+          save();closeModal();G.busy=false;resetHint();
+        });
+      }
     }
     return ret;
   };
