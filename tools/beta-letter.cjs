@@ -21,6 +21,7 @@ fs.mkdirSync(out,{recursive:true});
     const text=await page.locator('#betaLetterBody').innerText();
     assert.match(text,/Дорогая бабушка Марина Борисовна!/);
     assert.match(text,/С любовью, твой внук Никита/);
+    assert.match(text,/Муся и Доня/);
     assert.match(await page.locator('#betaLetterTitle').innerText(),/Письмо от Никиты/);
     assert.ok(await page.locator('#betaLetterClose').isVisible());
     await page.screenshot({path:path.join(out,width+'x'+height+'-letter.png')});
