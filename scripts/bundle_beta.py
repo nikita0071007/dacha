@@ -17,6 +17,6 @@ if re.search(r'<(?:script|link)\b[^>]*(?:src|href)=["\'](?:https?:)?//',source,r
 assets=Path('app/src/main/assets')
 assets.mkdir(parents=True,exist_ok=True)
 (assets/'index.html').write_text(source,encoding='utf-8')
-for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js']:
+for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js','marina.js','marina.css']:
  shutil.copyfile(Path('beta')/file,assets/file)
 print('Bundled Android beta assets:',', '.join(f.name for f in assets.iterdir()))

@@ -1,0 +1,21 @@
+/* Character body parts animated independently; NO scaleX mirror of a flat sprite. */
+#scene #granny .gf{transform:none!important}
+#scene #granny.left .gf{transform:none!important}
+#scene #granny img.mimg{display:none!important}
+#scene #granny .marina-rig{display:block!important;height:42px!important;width:29px!important;min-width:0!important;overflow:visible!important;filter:drop-shadow(0 3px 2px rgba(33,53,24,.25));transform:none!important;pointer-events:none}
+#scene #granny .marina-rig .marina-front{display:block}
+#scene #granny .marina-rig .marina-side-right,#scene #granny .marina-rig .marina-side-left{display:none}
+#scene #granny[data-marina-view="left"] .marina-front,#scene #granny[data-marina-view="right"] .marina-front{display:none}
+#scene #granny[data-marina-view="left"] .marina-side-left,#scene #granny[data-marina-view="right"] .marina-side-right{display:block}
+#scene #granny.walk .marina-rig .marina-leg-a{animation:marina-leg-a .48s ease-in-out infinite alternate;transform-origin:18px 49px}
+#scene #granny.walk .marina-rig .marina-leg-b{animation:marina-leg-b .48s ease-in-out infinite alternate;transform-origin:26px 49px}
+#scene #granny.walk .marina-rig .marina-arm-a{animation:marina-leg-b .5s ease-in-out infinite alternate;transform-origin:13px 30px}
+#scene #granny.walk .marina-rig .marina-arm-b{animation:marina-leg-a .5s ease-in-out infinite alternate;transform-origin:31px 30px}
+#scene #granny.talking .marina-rig .marina-front{animation:marina-chat .35s ease-in-out infinite alternate}
+#scene #granny.granny-wave .marina-rig .marina-arm-b{animation:marina-wave .3s ease-in-out 4 alternate}
+@keyframes marina-leg-a{to{transform:rotate(20deg)}}
+@keyframes marina-leg-b{to{transform:rotate(-20deg)}}
+@keyframes marina-chat{to{transform:translateY(-1px)}}
+@keyframes marina-wave{to{transform:rotate(-42deg)}}
+@media(max-width:380px){#scene #granny .marina-rig{height:40px!important;width:27px!important}}
+@media(prefers-reduced-motion:reduce){#scene #granny .marina-rig *{animation:none!important}}

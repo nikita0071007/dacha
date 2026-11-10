@@ -20,8 +20,10 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Check garden scales and take screenshots
         run: node tools/beta-layout.cjs beta/index.html beta/verify-out
-      - name: Verify vegetable and fruit blocks
+      - name: Verify vegetables only on all 50 levels
         run: node tools/beta-harvest.cjs beta/index.html beta/verify-out
+      - name: Play actual match-3 moves and check Marina poses
+        run: node tools/beta-gameplay.cjs beta/index.html beta/verify-out
       - name: Check voluntary support is disabled without payment URL
         run: node tools/beta-support.cjs beta/support.js
       - name: Check WebAudio samples

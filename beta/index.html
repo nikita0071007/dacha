@@ -554,6 +554,7 @@ body:has(#game:not([hidden])){background:linear-gradient(rgba(255,248,230,.42),r
 <link rel="stylesheet" href="step1.css">
 <link rel="stylesheet" href="letter.css">
 <link rel="stylesheet" href="music.css">
+<link rel="stylesheet" href="marina.css">
 </head>
 <body>
 <noscript><div style="position:fixed;left:0;right:0;top:0;z-index:300;background:#FFF1B8;color:#5A4300;padding:14px 16px;font:600 15px/1.4 sans-serif;text-align:center">
@@ -686,7 +687,7 @@ body:has(#game:not([hidden])){background:linear-gradient(rgba(255,248,230,.42),r
 
 <script>
 const N = 7;
-const TYPES = ['🍅','🥕','🥒','🍓','🥬','🍎'];
+const TYPES = ['🍅','🥕','🥒','🥬','🫑','🫜'];
 const VEG = [
 /* помидор */
 '<svg viewBox="0 0 64 64" width="1em" height="1em"><defs><radialGradient id="vT1" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#FF9A7A"/><stop offset=".35" stop-color="#EE4630"/><stop offset="1" stop-color="#A5170E"/></radialGradient><radialGradient id="vT2" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#2d1a08" stop-opacity=".35"/><stop offset="1" stop-color="#2d1a08" stop-opacity="0"/></radialGradient></defs><ellipse cx="32" cy="57" rx="19" ry="4.5" fill="url(#vT2)"/><path d="M32 17 C45 14 58 22 57 37 C56 51 44 57 32 57 C20 57 8 51 7 37 C6 22 19 14 32 17Z" fill="url(#vT1)"/><path d="M32 18 C30 28 30 44 33 56" stroke="#9C150C" stroke-opacity=".35" stroke-width="1.6" fill="none"/><ellipse cx="21" cy="29" rx="7" ry="4" fill="#fff" opacity=".55" transform="rotate(-35 21 29)"/><path d="M32 18 L25 12 L30 17 L27 8 L32 15 L37 8 L35 17 L40 12Z" fill="#4C9A2A" stroke="#2F6F18" stroke-width="1" stroke-linejoin="round"/><path d="M32 15 Q33 9 36 6" stroke="#3E7F20" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>',
@@ -2424,5 +2425,6 @@ setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||document.hidden||win
 <script src="music.js"></script>
 <script src="letter.js"></script>
 <script src="support.js"></script>
+<script src="marina.js"></script>
 </body>
 </html>

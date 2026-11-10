@@ -111,7 +111,7 @@
     return ORIGINAL.finishTurn();
   };
 
-  // Step 1d. Two disjoint six-piece sets. Numbers 0–5 are reused only inside each block.
+  // Fixed vegetable-only harvest across all levels. Fruit rotation removed after playtest feedback.
   // Existing SVGs provide consistent highlight and outline; new pieces use the same 64x64 canvas.
   const baseSvg=VEG.slice();
   const art=(id,a,b,body)=>'<svg viewBox="0 0 64 64" width="1em" height="1em" role="img" aria-label="'+id+'">'
@@ -152,12 +152,10 @@
     +'<circle cx="16" cy="39" r="9"/><circle cx="30" cy="39" r="9"/><circle cx="37" cy="49" r="9"/>'
     +'<circle cx="23" cy="51" r="9"/></g><g fill="#FFF2FF" opacity=".65"><circle cx="20" cy="23" r="3"/><circle cx="34" cy="21" r="3"/><circle cx="12" cy="36" r="3"/><circle cx="28" cy="35" r="3"/></g>');
   const vegetableSet={names:['🍅','🥕','🥒','🥬','🫑','🫜'],icons:[baseSvg[0],baseSvg[1],baseSvg[2],baseSvg[4],pepper,beet]};
-  const fruitSet={names:['🍎','🍐','🍓','🍒','🟣','🍇'],icons:[baseSvg[5],pear,baseSvg[3],cherry,plum,grapes]};
   function setProduce(level){
-    const fruit=Math.floor(level/10)%2===1,pack=fruit?fruitSet:vegetableSet;
-    TYPES.splice(0,TYPES.length,...pack.names);
-    VEG.splice(0,VEG.length,...pack.icons);
-    document.documentElement.dataset.harvest=fruit?'fruit':'vegetable';
+    TYPES.splice(0,TYPES.length,...vegetableSet.names);
+    VEG.splice(0,VEG.length,...vegetableSet.icons);
+    document.documentElement.dataset.harvest='vegetable';
   }
 
   startLevel=function(i){
@@ -169,17 +167,7 @@
       if(L.locks)G.goals.lock=extraBlocks(G.board);
       G.pests=!!L.pests;G.pestTurns=0;
       renderGoals();
-      if(i>0&&i%10===0&&!(S.betaHarvestIntroduced||[]).includes(i)){
-        G.busy=true;
-        const fruit=Math.floor(i/10)%2===1;
-        openModal('<div class="intro-ico">'+(fruit?'🍎🍐🍓':'🍅🥕🥬')+'</div><h2>Теперь собираем '+(fruit?'фрукты':'овощи')+'!</h2><p>Новый урожай на даче! В этом десятке уровней все шесть фишек — '+(fruit?'фрукты':'овощи')+'.</p><button class="btn" id="nextHarvest">Начать сбор</button>');
-        $('#sheet').dataset.closable='0';
-        on('nextHarvest',()=>{
-          S.betaHarvestIntroduced=Array.isArray(S.betaHarvestIntroduced)?S.betaHarvestIntroduced:[];
-          if(!S.betaHarvestIntroduced.includes(i))S.betaHarvestIntroduced.push(i);
-          save();closeModal();G.busy=false;resetHint();
-        });
-      }
+      // No fruit-switch modal: every level uses the same six vegetables.
     }
     return ret;
   };

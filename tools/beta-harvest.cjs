@@ -21,20 +21,17 @@ for(const level of [1,10,11,20,21,30,31,40,41,50]){
       hasMove:hasMove(G.board),runs:findRuns(G.board).length,
       intro:document.querySelector('#sheet')?.textContent?.slice(0,200)};
   },level);
-  const expected=Math.floor((level-1)/10)%2===0?'vegetable':'fruit';
+  const expected='vegetable';
   if(status.kind!==expected || !status.allSvg || status.runs!==0 || !status.hasMove)
      throw Error('Invalid harvest level '+level+': '+JSON.stringify(status));
-  if(level===11 || level===21 || level===31 || level===41){
-     if(!status.intro.includes('Теперь собираем'))throw Error('Missing block introduction '+level);
-     await page.screenshot({path:path.join(out,'harvest-transition-'+level+'.png')});
-  }
-  if(level===10||level===11||level===20||level===21){
-    await page.evaluate(()=>{document.getElementById('nextHarvest')?.click();closeModal();G.busy=false;});
-    await page.screenshot({path:path.join(out,'harvest-board-'+level+'.png')});
+  if(status.pieces.some(x=>['🍎','🍐','🍓','🍒','🟣','🍇'].includes(x)))throw Error('Fruit in grid on level '+level);
+  if(level===10||level===11||level===20||level===21||level===50){
+    if(status.intro&&status.intro.includes('Теперь собираем'))throw Error('Obsolete fruit/vegetable transition');
+    await page.screenshot({path:path.join(out,'vegetables-board-'+level+'.png')});
   }
   items.push(status);
 }
 fs.writeFileSync(path.join(out,'harvest-sets.json'),JSON.stringify(items,null,2));
-console.log('PASS alternating sets, 4 transitions, 10 sampled boards');
+console.log('PASS vegetables only: 10 sampled boards, including levels 11, 21, 31, 41 and 50');
 await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
