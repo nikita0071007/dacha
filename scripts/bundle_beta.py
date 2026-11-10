@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Copy only isolated beta web files into Android WebView assets; strip network dependencies."""
+"""Copy only isolated beta web files into Android WebView assets; strip network dependencies.
+Preserve vegetable-only gameplay and animated Marina beta assets.
+"""
 from pathlib import Path
 import re,shutil
 source=Path('beta/index.html').read_text(encoding='utf-8')
