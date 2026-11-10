@@ -11,7 +11,7 @@ await page.goto('file://'+file);
 await page.locator('#spPlay').click();
 await page.waitForTimeout(450);
 const items=[];
-for(const level of [1,10,11,20,21,30,31,40,41,50]){
+for(const level of Array.from({length:50},(_,i)=>i+1)){
   const status=await page.evaluate(n=>{
     if(typeof closeModal==='function')closeModal();
     G=null;startLevel(n-1);
@@ -32,6 +32,6 @@ for(const level of [1,10,11,20,21,30,31,40,41,50]){
   items.push(status);
 }
 fs.writeFileSync(path.join(out,'harvest-sets.json'),JSON.stringify(items,null,2));
-console.log('PASS vegetables only: 10 sampled boards, including levels 11, 21, 31, 41 and 50');
+console.log('PASS vegetables only: all 50 levels checked');
 await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});
