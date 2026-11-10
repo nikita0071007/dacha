@@ -1,0 +1,31 @@
+name: Beta 2.0 Step 1 validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/v2-test-build]
+    paths: ['beta/**', 'tools/**', 'CHANGELOG.md', 'ROADMAP_100.md', '.github/workflows/beta-verify.yml']
+jobs:
+  beta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Check garden scales and take screenshots
+        run: node tools/beta-layout.cjs beta/index.html beta/verify-out
+      - name: Run Claude verification on beta
+        run: node tools/verify.js beta/index.html 50 beta/verify-out
+      - name: Upload screenshots and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beta-step1-verification
+          path: beta/verify-out/
+          if-no-files-found: warn
