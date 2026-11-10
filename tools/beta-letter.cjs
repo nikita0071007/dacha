@@ -1,0 +1,40 @@
+const { chromium } = require('playwright');
+const assert = require('node:assert/strict');
+const fs = require('fs');
+const path = require('path');
+const file = path.resolve(process.argv[2] || 'beta/index.html');
+const out = path.resolve(process.argv[3] || 'beta/verify-out');
+fs.mkdirSync(out,{recursive:true});
+(async()=>{
+  const browser = await chromium.launch({headless:true,args:['--no-sandbox']});
+  for(const [width,height] of [[360,640],[390,800],[412,915]]){
+    const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});
+    await context.addInitScript(()=>localStorage.setItem('dacha3v2',JSON.stringify({who:'girl',visitorName:'QA',stars:0,level:0})));
+    const page=await context.newPage();
+    const errors=[];page.on('pageerror',e=>errors.push(e.message));
+    await page.goto('file://'+file);
+    await page.locator('#spPlay').click();
+    await page.evaluate(()=>{try{closeModal()}catch(e){}});
+    await page.locator('#betaSettingsBtn').click();
+    assert.match(await page.locator('#sheet').innerText(),/Настройки/);
+    await page.locator('#betaSettingsLetter').click();
+    const text=await page.locator('#betaLetterBody').innerText();
+    assert.match(text,/Дорогая бабушка Марина Борисовна!/);
+    assert.match(text,/С любовью, твой внук Никита/);
+    assert.match(await page.locator('#betaLetterTitle').innerText(),/Письмо от Никиты/);
+    assert.ok(await page.locator('#betaLetterClose').isVisible());
+    await page.screenshot({path:path.join(out,width+'x'+height+'-letter.png')});
+    await page.locator('#betaLetterClose').click();
+    assert.ok(await page.locator('#modal').isHidden());
+    await page.locator('#betaAboutBtn').click();
+    assert.match(await page.locator('#sheet').innerText(),/Об игре/);
+    await page.locator('#betaAboutLetter').click();
+    assert.equal(await page.locator('#betaLetterBody').innerText(),text);
+    await page.locator('#betaLetterClose').click();
+    assert.ok(await page.locator('#modal').isHidden());
+    assert.equal(errors.length,0,'browser errors: '+errors.join('; '));
+    console.log('PASS letter 2 entry points at '+width+'x'+height);
+    await context.close();
+  }
+  await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
