@@ -58,6 +58,8 @@ const path = require('path');
   await page.locator('#playBtn').click();
   await page.waitForTimeout(900);
   if (await page.locator('#game').isHidden()) throw new Error('Level did not open');
+  // Dismiss daily/login overlays in screenshot capture so the actual match-3 board is visible.
+  if (await page.locator('#modal').isVisible()) await page.locator('#modal').evaluate(el => { el.hidden=true; });
   await page.screenshot({ path: 'smoke-game.png', fullPage: true });
   const boards = await page.evaluate(() => {
     const issues = [];
