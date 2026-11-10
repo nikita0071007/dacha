@@ -20,6 +20,7 @@ const path = require('path');
   }
   const splashPlay = page.locator('#spPlay');
   await splashPlay.waitFor({ state: 'visible', timeout: 15000 });
+  await page.screenshot({ path: 'smoke-splash.png', fullPage: true });
   await splashPlay.click();
   await page.waitForTimeout(600);
   if (await page.locator('#whoBoy').count()) {
@@ -71,6 +72,11 @@ const path = require('path');
     return {levels:LEVELS.length,issues};
   });
   if(boards.levels!==50||boards.issues.length)throw new Error('Board generation: '+JSON.stringify(boards));
+  // Capture the actual win UI; this is debug-triggered, NOT evidence a player completed the level.
+  await page.evaluate(() => win());
+  await page.waitForTimeout(450);
+  if (await page.locator('#modal').isHidden()) throw new Error('Test-triggered victory UI did not open');
+  await page.screenshot({ path: 'smoke-victory-test-triggered.png', fullPage: true });
   await page.reload();
   await page.waitForTimeout(500);
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('dacha3v2') || '{}'));
