@@ -1,0 +1,25 @@
+name: Source ZIP for Claude
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/marina-wardrobe-v1]
+    paths: ['.github/workflows/source-export.yml', 'CLAUDE_HANDOFF.md']
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Archive all project sources and documentation
+        run: |
+          mkdir -p /tmp/dacha-export
+          zip -q -r /tmp/dacha-export/Babushkina_Dacha_Source_for_Claude.zip . \
+            -x '.git/*' 'node_modules/*' '.gradle/*' 'app/build/*' 'app/src/main/assets/index.html'
+          unzip -t /tmp/dacha-export/Babushkina_Dacha_Source_for_Claude.zip
+          sha256sum /tmp/dacha-export/Babushkina_Dacha_Source_for_Claude.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: babushkina-dacha-source-for-claude
+          path: /tmp/dacha-export/Babushkina_Dacha_Source_for_Claude.zip
+          if-no-files-found: error
