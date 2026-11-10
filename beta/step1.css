@@ -1,0 +1,4 @@
+/* Step 1 beta: distinct locks and untouchable rotten produce */
+.tile.locked{background:radial-gradient(circle,rgba(255,220,90,.45),transparent 76%)}
+.tile.locked.cracked{filter:brightness(1.18)}
+.tile.rotten{cursor:not-allowed!important;filter:saturate(.72) grayscale(.18)}
