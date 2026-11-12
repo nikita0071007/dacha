@@ -1,0 +1,29 @@
+name: Browser smoke test
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/marina-wardrobe-v1]
+    paths: ['index.html', 'tests/**', '.github/workflows/browser-smoke.yml']
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test game interactions
+        run: node tests/browser-smoke.cjs
+      - name: Upload test screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-smoke-screenshots
+          path: smoke-*.png
+          if-no-files-found: ignore

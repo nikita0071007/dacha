@@ -1,0 +1,16 @@
+plugins { id 'com.android.application' }
+android {
+    namespace 'ru.gusevmade.dacha'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'ru.gusevmade.dacha.betatest'
+        minSdk 24
+        targetSdk 35
+        versionCode 2
+        versionName '0.2-visual-test'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
