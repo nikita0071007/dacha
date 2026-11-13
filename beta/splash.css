@@ -1,0 +1,26 @@
+/* Beta splash: original approved cover remains the illustration; HTML supplies all UI. */
+#splash.splash{display:flex;flex-direction:column;align-items:center;gap:0;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px calc(env(safe-area-inset-bottom,0px) + 8px);background:linear-gradient(180deg,#86c6ed 0%,#f4e5b7 50%,#598e3b 100%)!important;color:#4c2a10}
+#splash[hidden]{display:none!important}
+#splash .sp-title,#splash .sp-world{display:none!important}
+#splash .beta-splash-header{position:relative;z-index:4;width:min(100%,500px);height:clamp(106px,14.5vh,133px);flex:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;box-sizing:border-box}
+#splash .beta-splash-board{position:relative;display:flex;align-items:center;justify-content:center;width:min(82%,350px);height:69%;padding:5px 12px;border:3px solid #84471d;border-radius:45% 45% 18px 18px/24px 24px 16px 16px;background:repeating-linear-gradient(0deg,transparent 0 20px,rgba(45,19,2,.11) 21px 23px),linear-gradient(160deg,#9c5b30,#d38b43 48%,#83421b);box-shadow:inset 0 2px 3px #ffe4a2a6,inset 0 -5px 3px #5e321c55,0 5px 0 #5d3018,0 8px 12px #38231070;transform:rotate(-1deg)}
+#splash .beta-splash-name{font-family:Georgia,'Times New Roman',serif;line-height:.97;text-align:center;font-size:clamp(24px,7vw,37px);color:#fff5dd;text-shadow:0 2px 1px #633718,0 3px 3px #40210d;font-weight:800}
+#splash .beta-splash-tools{position:absolute;top:4px;right:0;display:flex;gap:5px}
+#splash .beta-splash-tools button{width:clamp(33px,9vw,42px);height:clamp(33px,9vw,42px);border:2px solid #75401c;border-radius:50%;background:linear-gradient(160deg,#f8d18c,#a65f2a);box-shadow:inset 0 2px 2px #fff2cb,0 3px 0 #613717;color:#fff8df;font-size:clamp(17px,5vw,23px);text-shadow:0 1px 1px #593316;cursor:pointer}
+#splash .beta-splash-tools button.off{opacity:.65;text-decoration:line-through}
+#splash .beta-splash-art{position:relative;z-index:1;flex:1 1 auto;width:min(100%,500px);min-height:115px;background-image:var(--art-cover);background-repeat:no-repeat;background-size:100% auto;background-position:center calc(-0.51 * min(100vw,500px));border-radius:14px 14px 4px 4px;box-shadow:0 4px 14px rgba(28,47,18,.2)}
+#splash .sp-bottom{display:flex;flex-direction:column;align-items:center;gap:7px;flex:none;width:min(100%,500px);max-width:500px;margin:0!important;padding:9px 8px 3px!important;border-radius:0 0 14px 14px;background:linear-gradient(180deg,rgba(110,62,24,.93),#784523)!important;box-shadow:0 5px 12px #263d1b4a}
+#splash .beta-splash-greeting{box-sizing:border-box;width:100%;border:2px solid #b67e3c;border-radius:16px;background:linear-gradient(165deg,#fff8de,#f4dcab);padding:7px 11px;color:#593518;text-align:center;font-size:clamp(12px,3.35vw,15px);line-height:1.32;box-shadow:inset 0 0 0 2px #fff9e7}
+#splash .sp-bar{width:100%;height:8px;border-width:1px}
+#splash .sp-text{margin:0;color:#fff6dc;font-size:12px}
+#splash:has(#spPlay:not([hidden])) .sp-bar,#splash:has(#spPlay:not([hidden])) .sp-text{display:none!important}
+#splash .sp-play,#splash #spContinue,#splash #spLetter{box-sizing:border-box;display:block;width:100%;min-height:43px;margin:0!important;border-radius:13px;font-size:clamp(16px,4.4vw,21px);font-weight:800;cursor:pointer;white-space:normal}
+#splash .sp-play{background:linear-gradient(#9add45,#409d24);border:3px solid #2e7621;box-shadow:0 3px 0 #245c18;color:#fff;text-shadow:0 2px 1px #236521}
+#splash #spContinue,#splash #spLetter{background:linear-gradient(#fff4cf,#f3c97d);border:2px solid #a66b30;color:#754219;box-shadow:0 2px 0 #8b5123}
+#splash #spContinue[hidden],#splash .sp-play[hidden]{display:none!important}
+#splash .sp-hint{margin:0;font-size:clamp(10px,2.8vw,12px);color:#fff1d0}
+#splash .sp-dev{margin:0;font-size:11px;color:#ffedcb}
+#splash:has(#spPlay[hidden]) #spContinue,#splash:has(#spPlay[hidden]) #spLetter{opacity:.6;pointer-events:none}
+body:has(#splash.beta-dialog-on:not([hidden])) #modal{z-index:120}
+@media(max-height:690px){#splash .beta-splash-header{height:101px}#splash .beta-splash-art{min-height:95px}#splash .sp-bottom{padding:5px 7px!important;gap:5px}#splash .beta-splash-greeting{padding:5px 8px;line-height:1.2}#splash .sp-play,#splash #spContinue,#splash #spLetter{min-height:38px;font-size:16px}#splash .sp-hint{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#splash *,#splash{animation:none!important;transition:none!important}}

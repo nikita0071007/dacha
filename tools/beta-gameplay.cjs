@@ -9,14 +9,14 @@ for(const [w,h] of [[360,640],[390,800],[412,915]]){
  await p.evaluate(()=>{try{closeModal()}catch(e){};renderHome();});
  await p.screenshot({path:path.join(out,w+'x'+h+'-marina-front.png')});
  let poses=await p.evaluate(()=>{
-  const el=document.querySelector('#granny'),rig=el.querySelector('.marina-rig');
-  if(!rig)throw Error('animated Marina not found');
+  const el=document.querySelector('#granny'),sprite=el.querySelector('img.mimg');
+  if(!sprite||!sprite.src.startsWith('data:image/webp;'))throw Error('Approved Marina sprite is missing');
+  if(el.querySelector('.marina-rig'))throw Error('Code-drawn replacement of Marina must be absent');
   const modes=[];
-  for(const [x,y] of [[50,78],[35,77],[55,77]]){el.classList.add('walk');placeGranny(x,y);modes.push({x,y,left:el.classList.contains('left'),gf:window.getComputedStyle(el.querySelector('.gf')).transform});}
+  for(const [x,y] of [[50,78],[35,77],[55,77]]){el.classList.add('walk');placeGranny(x,y);modes.push({x,y,left:el.classList.contains('left')});}
   return modes;
  });
  assert.equal(poses[1].left,true);assert.equal(poses[2].left,false);
- assert.equal(poses[1].gf,'none','no mirrored flat image');
  await p.screenshot({path:path.join(out,w+'x'+h+'-marina-side.png')});
  await p.evaluate(()=>{document.querySelector('#granny').classList.remove('walk');startLevel(0);try{closeModal()}catch(e){};G.busy=false;});
  let before=await p.evaluate(()=>G.moves);
