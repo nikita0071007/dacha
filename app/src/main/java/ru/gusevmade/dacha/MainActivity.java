@@ -7,12 +7,30 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
 import android.view.ViewGroup;
+import android.view.View;
+import android.view.WindowInsets;
+import android.os.Build;
+import android.widget.FrameLayout;
 
 public class MainActivity extends Activity {
     private WebView web;
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
+        // An inset-aware root keeps the WebView away from Android status/navigation bars.
+        // Android 15 / target 35 can enforce edge-to-edge, so apply real system insets.
+        FrameLayout root = new FrameLayout(this);
+        root.setClipToPadding(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            getWindow().setDecorFitsSystemWindows(false);
+            root.setOnApplyWindowInsetsListener((v, insets) -> {
+                android.graphics.Insets safe = insets.getInsets(
+                    WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                root.setPadding(safe.left, safe.top, safe.right, safe.bottom);
+                return insets;
+            });
+        }
         web = new WebView(this);
+        web.setOverScrollMode(View.OVER_SCROLL_NEVER);
         web.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient());
@@ -23,7 +41,12 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMediaPlaybackRequiresUserGesture(true);
-        setContentView(web);
+        settings.setSupportZoom(false);
+        settings.setBuiltInZoomControls(false);
+        settings.setDisplayZoomControls(false);
+        root.addView(web);
+        setContentView(root);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) root.requestApplyInsets();
         web.loadUrl("file:///android_asset/index.html");
     }
     @Override public void onBackPressed() {

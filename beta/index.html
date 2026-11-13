@@ -2,12 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Бабушкина дача 2.0 — тест</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --sky:#D6ECE6; --sky2:#EAF5EF; --paper:#FFFBF0; --ink:#2F2618; --muted:#6E6250;
@@ -16,8 +12,6 @@
   --cell:#F4E6C8; --cell2:#EADAB5; --line:rgba(60,40,20,.16);
   --tag-bg:#FFF1B8; --tag-ink:#5A4300; --tag-line:#C99A00;
   box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -39,7 +33,7 @@ body{
   margin:0; min-height:100%;
   background:linear-gradient(180deg,var(--sky2),var(--sky));
   color:var(--ink);
-  font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
   -webkit-tap-highlight-color:transparent;
 }
 button{font-family:inherit;cursor:pointer}
@@ -555,6 +549,7 @@ body:has(#game:not([hidden])){background:linear-gradient(rgba(255,248,230,.42),r
 <link rel="stylesheet" href="letter.css">
 <link rel="stylesheet" href="music.css">
 <link rel="stylesheet" href="splash.css">
+<link rel="stylesheet" href="screen-lock.css">
 
 </head>
 <body>

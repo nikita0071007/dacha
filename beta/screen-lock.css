@@ -1,0 +1,13 @@
+/* Beta 2.0 — point A. Keep the document fixed; prevent pinch zoom and sideways page travel. */
+html,body{margin:0!important;width:100%!important;height:100%!important;max-width:100%;overflow:hidden!important;overscroll-behavior:none!important;touch-action:manipulation;-webkit-text-size-adjust:100%}
+html{position:relative}
+body{position:relative;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+/* The existing long home screen remains usable: its content scrolls INSIDE the app,
+   rather than moving or zooming the entire document. Point B redesigns this screen. */
+body>.app{box-sizing:border-box;max-width:460px;height:100%;max-height:100%;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+body>.app::-webkit-scrollbar{display:none}
+#splash.splash{overscroll-behavior:none;touch-action:manipulation}
+#scene,#board,.board{touch-action:none;overscroll-behavior:none}
+#levels{max-height:160px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+#modal .sheet{overscroll-behavior:contain;touch-action:pan-y}
+@media(max-height:680px){#levels{max-height:125px}}

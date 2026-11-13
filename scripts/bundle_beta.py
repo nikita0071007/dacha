@@ -5,20 +5,15 @@ Preserve vegetable-only gameplay and animated Marina beta assets.
 from pathlib import Path
 import re,shutil
 source=Path('beta/index.html').read_text(encoding='utf-8')
-rules=[
- r'<script\s+src=["\']https://unpkg\.com/@vkontakte/vk-bridge/dist/browser\.min\.js["\']\s*></script>\s*',
- r'<link\s+rel=["\']preconnect["\']\s+href=["\']https://fonts\.googleapis\.com["\']\s*/?>\s*',
- r'<link\s+rel=["\']preconnect["\']\s+href=["\']https://fonts\.gstatic\.com["\']\s+crossorigin\s*/?>\s*',
- r'<link\s+href=["\']https://fonts\.googleapis\.com/css2[^"\']+["\']\s+rel=["\']stylesheet["\']\s*/?>\s*'
-]
-for rule in rules:
- source,n=re.subn(rule,'',source,count=1)
- if n!=1:raise SystemExit('Missing expected remote resource: '+rule)
-if re.search(r'<(?:script|link)\b[^>]*(?:src|href)=["\'](?:https?:)?//',source,re.I):
- raise SystemExit('Offline beta still includes remote script/style')
+# Beta HTML itself contains no remote VK bridge or Google Fonts.
+# Fail build rather than silently stripping new network dependencies.
+if re.search(r'<(?:script|link)\\b[^>]*(?:src|href)=["\\'](?:https?:)?//', source, re.I):
+ raise SystemExit('Offline beta contains remote script or style')
+if 'fonts.googleapis.com' in source or 'fonts.gstatic.com' in source:
+ raise SystemExit('Remote Google Fonts still present')
 assets=Path('app/src/main/assets')
 assets.mkdir(parents=True,exist_ok=True)
 (assets/'index.html').write_text(source,encoding='utf-8')
-for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js','splash.js','splash.css']:
+for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js','splash.js','splash.css','screen-lock.css']:
  shutil.copyfile(Path('beta')/file,assets/file)
 print('Bundled Android beta assets:',', '.join(f.name for f in assets.iterdir()))

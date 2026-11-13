@@ -18,6 +18,8 @@ jobs:
       - run: |
           npm install --no-save playwright@1.56.1
           npx playwright install --with-deps chromium
+      - name: Check mobile viewport lock and offline assets
+        run: node tools/beta-screen-lock.cjs beta/index.html beta/verify-out
       - name: Verify approved beta splash controls and capture screenshots
         run: node tools/beta-splash.cjs beta/index.html beta/verify-out
       - name: Check garden scales and take screenshots
