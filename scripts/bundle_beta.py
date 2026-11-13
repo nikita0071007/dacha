@@ -7,7 +7,7 @@ import re,shutil
 source=Path('beta/index.html').read_text(encoding='utf-8')
 # Beta HTML itself contains no remote VK bridge or Google Fonts.
 # Fail build rather than silently stripping new network dependencies.
-if re.search(r'<(?:script|link)\\b[^>]*(?:src|href)=["\\'](?:https?:)?//', source, re.I):
+if re.search(r"""<(?:script|link)\b[^>]*(?:src|href)=['"](?:https?:)?//""", source, re.I):
  raise SystemExit('Offline beta contains remote script or style')
 if 'fonts.googleapis.com' in source or 'fonts.gstatic.com' in source:
  raise SystemExit('Remote Google Fonts still present')
