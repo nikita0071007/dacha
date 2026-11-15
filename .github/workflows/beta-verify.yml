@@ -22,6 +22,8 @@ jobs:
         run: node tools/beta-screen-lock.cjs beta/index.html beta/verify-out
       - name: Verify approved beta splash controls and capture screenshots
         run: node tools/beta-splash.cjs beta/index.html beta/verify-out
+      - name: Compare all house backgrounds, costs and level launch
+        run: node tools/beta-home.cjs beta/index.html beta/verify-out
       - name: Check garden scales and take screenshots
         run: node tools/beta-layout.cjs beta/index.html beta/verify-out
       - name: Verify vegetables only on all 50 levels

@@ -550,6 +550,7 @@ body:has(#game:not([hidden])){background:linear-gradient(rgba(255,248,230,.42),r
 <link rel="stylesheet" href="music.css">
 <link rel="stylesheet" href="splash.css">
 <link rel="stylesheet" href="screen-lock.css">
+<link rel="stylesheet" href="home-v2.css">
 
 </head>
 <body>
@@ -2391,6 +2392,7 @@ setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||document.hidden||win
   var root = document.documentElement.style;
   root.setProperty('--art-cover', 'url(' + IM['cover'] + ')');
   root.setProperty('--art-level', 'url(' + IM['level'] + ')');
+  root.setProperty('--art-home-ready', 'url(' + IM['home'] + ')');
   var g = document.getElementById('granny'); if (!g) return;
   var holder = g.querySelector('.gf');
   if (holder) { holder.innerHTML = '<img class="mimg" alt="" src="' + IM['marina-stand'] + '">'; }
@@ -2434,5 +2436,6 @@ setInterval(()=>{if($('#home').hidden||!$('#modal').hidden||document.hidden||win
 <script src="letter.js"></script>
 <script src="support.js"></script>
 <script src="splash.js"></script>
+<script src="home-v2.js"></script>
 </body>
 </html>
