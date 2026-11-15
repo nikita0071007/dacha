@@ -1,43 +1,51 @@
-/* Point B — approved photo backgrounds and independently displayed repair states.
-   No changes to S, save(), level rules or construction cost. */
-(function(){
- 'use strict';
- const home=document.getElementById('home'),scene=document.getElementById('scene');
- if(!home||!scene)return;
- const fenceLayer=document.createElement('div');
- fenceLayer.className='beta-fence-layer';
- fenceLayer.setAttribute('aria-hidden','true');
- home.insertBefore(fenceLayer,home.firstChild);
- const status=document.createElement('div');status.className='beta-build-status';
- status.innerHTML='<button type="button" id="betaHouseStage" aria-label="Ремонт дома"></button><button type="button" id="betaFenceStage" aria-label="Ремонт забора"></button>';
- scene.insertAdjacentElement('afterend',status);
- const houseButton=document.getElementById('betaHouseStage'),fenceButton=document.getElementById('betaFenceStage');
- const statusUpdate=()=>{
-   const hs=houseStage(),fs=fenceStage();
-   const heading=home.querySelector('.title');
-   if(heading)heading.textContent='Бабушкина дача 2.0';
-   const houseState=hs<2?'ruined':hs<4?'half':'ready';
-   const fenceState=fs<2?'ruined':fs<4?'half':'ready';
-   home.dataset.betaHouse=houseState;
-   home.dataset.betaFence=fenceState;
-   houseButton.textContent='🏠 Дом · '+hs+'/5';
-   fenceButton.textContent='🪵 Забор · '+fs+'/4';
-   houseButton.title=HOUSE_STAGES[hs].n;
-   fenceButton.title=FENCE_STAGES[fs].n;
-   const current=currentTask();
-   houseButton.disabled=hs>=5||(!S.bought.includes('house')&&current?.id!=='house');
-   fenceButton.disabled=fs>=4||(!S.bought.includes('fence')&&current?.id!=='fence');
-   home.dataset.betaSceneReady='true';
- };
- const act=(kind)=>{
-   const target=scene.querySelector('.it[data-item="'+kind+'"]');
-   if(target?.onclick)target.click();
-   else if(currentTask()?.id===kind)buildTask();
- };
- houseButton.addEventListener('click',()=>act('house'));
- fenceButton.addEventListener('click',()=>act('fence'));
- const originalRenderHome=renderHome;
- renderHome=function(...args){const res=originalRenderHome(...args);statusUpdate();return res;};
- statusUpdate();
- window.betaHomeSnapshot=()=>({house:houseStage(),fence:fenceStage(),houseVisual:home.dataset.betaHouse,fenceVisual:home.dataset.betaFence,stars:S.stars,bought:S.bought.slice()});
+/* Beta 2.0 / Point B: presentation only, existing construction logic is untouched.
+   APPROVED artwork: embedded IM.home (set as --art-home-ready in beta/index.html).
+   Ruined/half images supplied by Nikita are awaiting a verified binary GitHub upload.
+   Do not claim a visual repair state is shown until its offline asset is present. */
+(function () {
+  'use strict';
+  const home = document.getElementById('home');
+  const scene = document.getElementById('scene');
+  if (!home || !scene) return;
+  home.classList.add('beta-home-v2');
+  home.querySelector('.title').textContent = 'Бабушкина дача 2.0';
+  const banner = document.createElement('div');
+  banner.className = 'beta-home-banner';
+  banner.innerHTML = '<span class="beta-home-banner-leaf" aria-hidden="true">🌼</span><strong>Бабушкина<br>дача 2.0</strong><span class="beta-home-banner-leaf" aria-hidden="true">🌼</span>';
+  scene.insertAdjacentElement('beforebegin',banner);
+  const status = document.createElement('div');
+  status.className = 'beta-repair-status';
+  status.innerHTML =
+    '<button type="button" id="betaHouseUpgrade" class="beta-repair-button" aria-label="Этапы ремонта дома"></button>'+
+    '<button type="button" id="betaFenceUpgrade" class="beta-repair-button" aria-label="Этапы ремонта забора"></button>';
+  scene.insertAdjacentElement('afterend',status);
+  const houseButton = document.getElementById('betaHouseUpgrade');
+  const fenceButton = document.getElementById('betaFenceUpgrade');
+  const originalRenderHome = renderHome;
+  const safe = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  function refresh() {
+    const house = houseStage(), fence = fenceStage();
+    scene.dataset.houseStage = String(house);
+    scene.dataset.fenceStage = String(fence);
+    const ownsHouse=S.bought.includes('house'),ownsFence=S.bought.includes('fence');
+    houseButton.disabled=!ownsHouse||house>=5;
+    fenceButton.disabled=!ownsFence||fence>=4;
+    const houseNext=HOUSE_STAGES[Math.min(house+1,5)];
+    const fenceNext=FENCE_STAGES[Math.min(fence+1,4)];
+    houseButton.innerHTML = '<span aria-hidden="true">🏠</span><span>Дом <b>'+house+'/5</b><small>'+(ownsHouse?(house>=5?'Готов!':safe(houseNext.n)+' · ⭐'+houseNext.c):'Стройка по заданию')+'</small></span>';
+    fenceButton.innerHTML = '<span aria-hidden="true">🪵</span><span>Забор <b>'+fence+'/4</b><small>'+(ownsFence?(fence>=4?'Готов!':safe(fenceNext.n)+' · ⭐'+fenceNext.c):'Стройка по заданию')+'</small></span>';
+    // Construction stages are independent; never derive either stage from the other.
+    // Final background is approved; two earlier states require image assets (no
+    // CSS/SVG-drawn replacement buildings or misaligned image crossfades).
+    scene.dataset.stageArt = 'ready-only';
+  }
+  houseButton.onclick = () => {if (!houseButton.disabled) renovateHouse();};
+  fenceButton.onclick = () => {if (!fenceButton.disabled) renovateFence();};
+  renderHome = function(...args) {
+    const value=originalRenderHome.apply(this,args);
+    refresh();
+    return value;
+  };
+  refresh();
+  window.BetaHomeV2 = Object.freeze({refresh,version:'B-preview',hasStageAssets:false});
 })();
