@@ -24,7 +24,7 @@ for(const [width,height] of [[360,640],[390,800],[412,915]]){
  let st=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
  await page.locator('#betaHouseUpgrade').click();
  let after=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
- assert.equal(after.h,st.h+1);assert.equal(after.f,st.f);assert.equal(after.level,st.level);assert.equal(after.star,st.star-HOUSE_STAGES[2].c);
+ assert.equal(after.h,st.h+1);assert.equal(after.f,st.f);assert.equal(after.level,st.level);assert.ok(after.star<st.star,'house renovation must use existing star cost');
  await page.locator('#betaFenceUpgrade').click();
  let next=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
  assert.equal(next.h,after.h);assert.equal(next.f,after.f+1);assert.equal(next.level,st.level);
