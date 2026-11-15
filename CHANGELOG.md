@@ -105,3 +105,7 @@
 ## 2026-11-15 — Screenshot review after first B CI
 - On real 360×640 Playwright screenshot the old two-row toolbar and task card clipping were visible. The toolbar is now a single horizontal row and the task card wraps its repair buttons within the viewport.
 - Increased approved bitmap Marina and pet sprites without redrawing them. Updated home title to «Бабушкина дача 2.0» and corrected point-B test's reference to page-local HOUSE_STAGES.
+
+## 2026-11-15 — B regression screenshot fixes
+- 390×800: обнаружил, что старые `.top .chip{width:100%}` растягивали первую кнопку на весь ряд, исправлено. Настройки, музыка, звук, жизни и звёзды теперь первые в компактной однострочной панели, дополнительные иконки доступны горизонтальной прокруткой.
+- Test B: дневное модальное окно может открыться автоматически и закрыть кнопку Играть; перед тестовым кликом закрываем уведомление, не меняя игровую логику.

@@ -27,6 +27,7 @@ const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(pro
   assert.equal(after.stars,200-repairCost);
   assert.match(await page.locator('#playBtn').innerText(),/Играть: уровень 5/);
   assert.equal(await page.locator('#levels .lv').count(),50);
+  await page.evaluate(()=>{if(!document.querySelector('#modal').hidden)closeModal();});
   await page.locator('#playBtn').click();assert.equal(await page.locator('#game').isVisible(),true);
   assert.deepEqual(errors,[],'browser errors');
   console.log('PASS point B '+w+'x'+h+' all 3 states, separate fence, costs, play and levels');

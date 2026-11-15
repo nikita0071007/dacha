@@ -53,3 +53,11 @@ body:has(#home:not([hidden])) .top .spacer{display:none}
 #home>.task .btn{flex:1 1 43%!important;min-width:0!important;width:auto!important;white-space:normal!important;margin:0!important;font-size:12px!important;padding:7px 6px!important}
 #home>.task .tt small{font-size:11px!important}
 @media(max-height:690px){#home #scene.scene{height:clamp(165px,27dvh,205px)!important}}
+
+/* The legacy six-column toolbar gave each chip width:100%; neutralize it. */
+body:has(#home:not([hidden])) .top .chip{width:auto!important;min-width:37px!important;flex:0 0 auto!important;max-width:none!important}
+body:has(#home:not([hidden])) .top #betaSettingsBtn{order:-7}
+body:has(#home:not([hidden])) .top #musicBtn{order:-6}
+body:has(#home:not([hidden])) .top #soundBtn{order:-5}
+body:has(#home:not([hidden])) .top #livesChip{order:-4}
+body:has(#home:not([hidden])) .top .chip:nth-child(2){order:-3}
