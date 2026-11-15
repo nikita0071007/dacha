@@ -1,0 +1,27 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
+const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(process.argv[3]||'beta/verify-out');fs.mkdirSync(out,{recursive:true});
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});
+for(const [w,h] of [[360,640],[390,800],[412,915]]){
+ const c=await b.newContext({viewport:{width:w,height:h},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
+ await c.addInitScript(()=>localStorage.setItem('dacha3v2',JSON.stringify({who:'girl',visitorName:'QA',level:2,lives:5,stars:300,bought:[]})));
+ const p=await c.newPage(),errs=[];p.on('pageerror',e=>errs.push(e.message));
+ await p.goto('file://'+file);await p.locator('#spPlay').waitFor({state:'visible',timeout:12000});await p.locator('#spPlay').click();
+ await p.evaluate(()=>{try{closeModal()}catch(e){};renderHome()});
+ assert.equal(await p.locator('#task.beta-garden-task').count(),1);
+ assert.match(await p.locator('.beta-task-heading').innerText(),/Дела на даче/);
+ assert.equal(await p.locator('#levels .lv').count(),50);
+ const before=await p.evaluate(()=>({stars:S.stars,bought:S.bought.length,cost:currentTask().c}));
+ assert.match(await p.locator('#buildBtn').innerText(),/Построить/);
+ assert.match(await p.locator('#buildBtn').evaluate(e=>getComputedStyle(e).transitionProperty),/transform/);
+ await p.screenshot({path:path.join(out,'garden-buttons-'+w+'x'+h+'.png')});
+ await p.locator('#buildBtn').click();
+ const after=await p.evaluate(()=>({stars:S.stars,bought:S.bought.length}));
+ assert.equal(after.stars,before.stars-before.cost);assert.equal(after.bought,before.bought+1);
+ assert.equal(await p.locator('.beta-task-heading').count(),1);
+ await p.locator('#gardenStyleBtn').click();
+ assert.ok(await p.locator('.garden-styles button').count()>=2);
+ assert.ok(parseFloat(await p.locator('.garden-styles button').first().evaluate(e=>getComputedStyle(e).minHeight))>=44);
+ await p.screenshot({path:path.join(out,'garden-menu-'+w+'x'+h+'.png')});
+ assert.deepEqual(errs,[]);console.log('PASS animated garden menu '+w+'x'+h);
+ await c.close();
+}await b.close();})().catch(e=>{console.error(e);process.exit(1)});

@@ -14,7 +14,7 @@ if 'fonts.googleapis.com' in source or 'fonts.gstatic.com' in source:
 assets=Path('app/src/main/assets')
 assets.mkdir(parents=True,exist_ok=True)
 (assets/'index.html').write_text(source,encoding='utf-8')
-for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js','splash.js','splash.css','screen-lock.css','home-v2.css','home-v2.js','home-v2.js','home-v2.css']:
+for file in ['step1.js','step1.css','letter.js','letter.css','music.js','music.css','support.js','splash.js','splash.css','screen-lock.css','home-v2.css','home-v2.js','home-v2.js','home-v2.css','home-motion.js','home-motion.css']:
  shutil.copyfile(Path('beta')/file,assets/file)
 (assets/'art').mkdir(exist_ok=True)
 for name in ['home-ruined.webp','home-half.webp']:
