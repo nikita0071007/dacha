@@ -6,7 +6,7 @@ on:
     paths: ['beta/**', 'tools/**', 'CHANGELOG.md', 'ROADMAP_100.md', '.github/workflows/beta-verify.yml']
 jobs:
   beta:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 28
     permissions:
       contents: read

@@ -3,7 +3,7 @@
 #home[data-beta-house="ruined"]{--beta-house-image:url('art/home-ruined.webp')}
 #home[data-beta-house="half"]{--beta-house-image:url('art/home-half.webp')}
 #home[data-beta-house="ready"]{--beta-house-image:var(--art-home-ready)}
-#home .beta-fence-layer{position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--beta-fence-image) center top/100% auto no-repeat;mask-image:radial-gradient(ellipse 56% 13% at 21% 30%,#000 50%,transparent 99%);-webkit-mask-image:radial-gradient(ellipse 56% 13% at 21% 30%,#000 50%,transparent 99%);opacity:.85}
+#home .beta-fence-layer{position:absolute;inset:0;z-index:0;pointer-events:none;background:var(--beta-fence-image) center top/100% auto no-repeat;mask-image:radial-gradient(ellipse 56% 13% at 21% 30%,#000 50%,transparent 99%);-webkit-mask-image:radial-gradient(ellipse 56% 13% at 21% 30%,#000 50%,transparent 99%);opacity:.85}
 #home[data-beta-fence="ruined"]{--beta-fence-image:url('art/home-ruined.webp')}
 #home[data-beta-fence="half"]{--beta-fence-image:url('art/home-half.webp')}
 #home[data-beta-fence="ready"]{--beta-fence-image:var(--art-home-ready)}

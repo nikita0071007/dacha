@@ -97,3 +97,7 @@
 - Существующий нарисованный SVG-дом и общая кодовая пейзажная картинка **не показываются** на даче; их исходные строки оставлены для сохранения совместимости проверок, игровая логика и обработчики ремонтов неизменны. Переход по ремонту сохраняет цену звёзд и прогресс. Спрайты Марины, Муси, Дони остаются исходными.
 - Обновлены сборщик Android и `tools/beta-layout.cjs`; добавлен `tools/beta-home.cjs` на три экрана, три состояния, независимые стадии дома/забора, реальную покупку ремонта и старт уровня.
 - Фото могут немного «прыгать» при переключении из-за несовпадения ракурсов; пользователь ранее предупреждён. Визуальное утверждение и физический Android впереди, пункт C не начинался.
+
+## 2026-11-15 — CI compatibility fix for point B
+- GitHub Actions runner switched from ubuntu-latest (now Ubuntu 26.04) to pinned ubuntu-24.04 because Playwright 1.56.1 does not support Ubuntu 26.04. First run failed before tests; Android APK build succeeded.
+- Updated visual regression assertion to check actual SVG bounding box (hidden ancestor), adjusted fenced background layer z-index for independent display.

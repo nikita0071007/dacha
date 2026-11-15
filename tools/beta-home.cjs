@@ -11,8 +11,8 @@ const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(pro
    assert.equal(state.houseVisual,expectedHouse);assert.equal(state.fenceVisual,expectedFence);
    const photo=await page.locator('#home').evaluate(el=>getComputedStyle(el).backgroundImage);
    assert.match(photo,expectedHouse==='ready'?/data:image\/webp/:new RegExp('home-'+expectedHouse+'\\.webp'));
-   const visibleSvg=await page.locator('#scene .it[data-item="house"] svg').evaluate(el=>getComputedStyle(el).display);
-   assert.equal(visibleSvg,'none','no code-drawn house visible');
+   const visibleSvg=await page.locator('#scene .it[data-item="house"] svg').evaluate(el=>el.getBoundingClientRect().height);
+   assert.equal(visibleSvg,0,'no code-drawn house visible');
    await page.screenshot({path:path.join(out,'home-B-'+label+'-'+w+'x'+h+'.png')});
   }
   // Real repair click must retain old cost/state and leave fence progress untouched.
