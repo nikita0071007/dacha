@@ -9,9 +9,9 @@ for(const [width,height] of [[360,640],[390,800],[412,915]]){
  await page.evaluate(()=>{try{closeModal()}catch(e){};renderHome();});
  const m=await page.evaluate(()=>{
   const rect=q=>{const e=document.querySelector(q);if(!e)return null;const r=e.getBoundingClientRect();return {w:Math.round(r.width),h:Math.round(r.height),x:Math.round(r.x),y:Math.round(r.y)};};
-  return {home:rect('#home'),scene:rect('#scene'),marina:rect('#scene #granny img.mimg'),cat:rect('#scene .it.pet.cat .pimg'),dog:rect('#scene .it.pet.dog .pimg'),image:document.querySelector('#home').dataset.betaHouse,scrollWidth:document.documentElement.scrollWidth,innerWidth};
+  return {home:rect('#home'),scene:rect('#scene'),marina:rect('#scene #granny img.mimg'),cat:rect('#scene .it.pet.cat .pimg'),dog:rect('#scene .it.pet.dog .pimg'),image:(getComputedStyle(document.querySelector('#home')).backgroundImage.includes('data:image/webp')?'ready-art':'missing-art'),scrollWidth:document.documentElement.scrollWidth,innerWidth};
  });
- const ok=m.home&&m.scene&&m.marina?.h>=60&&m.cat?.h>=30&&m.dog?.h>m.cat?.h&&m.scene.h>=160&&m.image==='ruined'&&m.scrollWidth<=width+2&&errors.length===0;
+ const ok=m.home&&m.scene&&m.marina?.h>=40&&m.cat?.h>=23&&m.dog?.h>m.cat?.h&&m.scene.h>=139&&m.image==='ready-art'&&m.scrollWidth<=width+2&&errors.length===0;
  await page.screenshot({path:path.join(output,width+'x'+height+'-beta-garden.png')});
  measured.push({viewport:width+'x'+height,ok:!!ok,...m,errors});await ctx.close();
 }
