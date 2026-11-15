@@ -12,7 +12,10 @@ for(const [w,h] of [[360,640],[390,800],[412,915]]){
  assert.equal(await p.locator('#levels .lv').count(),50);
  const before=await p.evaluate(()=>({stars:S.stars,bought:S.bought.length,cost:currentTask().c}));
  assert.match(await p.locator('#buildBtn').innerText(),/Построить/);
- assert.match(await p.locator('#buildBtn').evaluate(e=>getComputedStyle(e).transitionProperty),/transform/);
+ assert.equal(await p.locator('#buildBtn').evaluate(e=>getComputedStyle(e).transitionProperty),'none','reduced-motion must disable animation');
+ await p.emulateMedia({reducedMotion:'no-preference'});
+ assert.match(await p.locator('#buildBtn').evaluate(e=>getComputedStyle(e).transitionProperty),/transform/,'regular mode should animate');
+ await p.emulateMedia({reducedMotion:'reduce'});
  await p.screenshot({path:path.join(out,'garden-buttons-'+w+'x'+h+'.png')});
  await p.locator('#buildBtn').click();
  const after=await p.evaluate(()=>({stars:S.stars,bought:S.bought.length}));
