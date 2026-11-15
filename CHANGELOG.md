@@ -101,3 +101,7 @@
 ## 2026-11-15 — CI compatibility fix for point B
 - GitHub Actions runner switched from ubuntu-latest (now Ubuntu 26.04) to pinned ubuntu-24.04 because Playwright 1.56.1 does not support Ubuntu 26.04. First run failed before tests; Android APK build succeeded.
 - Updated visual regression assertion to check actual SVG bounding box (hidden ancestor), adjusted fenced background layer z-index for independent display.
+
+## 2026-11-15 — Screenshot review after first B CI
+- On real 360×640 Playwright screenshot the old two-row toolbar and task card clipping were visible. The toolbar is now a single horizontal row and the task card wraps its repair buttons within the viewport.
+- Increased approved bitmap Marina and pet sprites without redrawing them. Updated home title to «Бабушкина дача 2.0» and corrected point-B test's reference to page-local HOUSE_STAGES.

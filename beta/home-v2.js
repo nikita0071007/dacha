@@ -14,6 +14,8 @@
  const houseButton=document.getElementById('betaHouseStage'),fenceButton=document.getElementById('betaFenceStage');
  const statusUpdate=()=>{
    const hs=houseStage(),fs=fenceStage();
+   const heading=home.querySelector('.title');
+   if(heading)heading.textContent='Бабушкина дача 2.0';
    const houseState=hs<2?'ruined':hs<4?'half':'ready';
    const fenceState=fs<2?'ruined':fs<4?'half':'ready';
    home.dataset.betaHouse=houseState;

@@ -36,3 +36,20 @@
 #home .event-banner{max-width:100%;margin:4px 0}
 @media(max-height:690px){#home{padding:8px 7px 12px}#home #scene.scene{height:clamp(170px,30dvh,230px)!important}#home>.lead{font-size:11px;padding:5px 7px}#home>.title{font-size:23px;padding:7px}#home .beta-build-status button{min-height:34px}#home>.levels{max-height:105px}}
 @media(prefers-reduced-motion:reduce){#home *{animation:none!important;transition:none!important}}
+
+/* Point B viewport refinement after actual 360px screenshot review. */
+body:has(#home:not([hidden])) .top{display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;touch-action:pan-x;white-space:nowrap;max-width:100%;padding:2px 0 4px;gap:5px;scrollbar-width:none}
+body:has(#home:not([hidden])) .top::-webkit-scrollbar{display:none}
+body:has(#home:not([hidden])) .top .chip{flex:none;font-size:15px;padding:5px 7px;min-height:37px}
+body:has(#home:not([hidden])) .top .spacer{display:none}
+#home #scene #granny{transform:translateY(-22px)}
+#home #scene .it.pet{transform:translateY(-12px)}
+#home #scene #granny .mimg{height:clamp(86px,24vw,108px)!important}
+#home #scene .it.pet.cat .pimg{height:clamp(46px,13vw,58px)!important}
+#home #scene .it.pet.dog .pimg{height:clamp(54px,15vw,65px)!important}
+#home>.task{display:flex!important;flex-wrap:wrap!important;gap:5px!important}
+#home>.task .ti{flex:0 0 37px!important}
+#home>.task .tt{flex:1 1 calc(100% - 58px)!important;min-width:0!important}
+#home>.task .btn{flex:1 1 43%!important;min-width:0!important;width:auto!important;white-space:normal!important;margin:0!important;font-size:12px!important;padding:7px 6px!important}
+#home>.task .tt small{font-size:11px!important}
+@media(max-height:690px){#home #scene.scene{height:clamp(165px,27dvh,205px)!important}}

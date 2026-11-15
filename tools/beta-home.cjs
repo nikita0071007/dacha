@@ -13,6 +13,9 @@ const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(pro
    assert.match(photo,expectedHouse==='ready'?/data:image\/webp/:new RegExp('home-'+expectedHouse+'\\.webp'));
    const visibleSvg=await page.locator('#scene .it[data-item="house"] svg').evaluate(el=>el.getBoundingClientRect().height);
    assert.equal(visibleSvg,0,'no code-drawn house visible');
+   const sizes=await page.evaluate(()=>({task:document.querySelector('#task').getBoundingClientRect().right,window:innerWidth,header:document.querySelector('.top').getBoundingClientRect().height}));
+   assert.ok(sizes.task<=sizes.window+1,'task overflow');
+   assert.ok(sizes.header<65,'home header wraps onto multiple rows');
    await page.screenshot({path:path.join(out,'home-B-'+label+'-'+w+'x'+h+'.png')});
   }
   // Real repair click must retain old cost/state and leave fence progress untouched.
@@ -20,7 +23,8 @@ const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(pro
   await page.locator('#betaHouseStage').click();
   const after=await page.evaluate(()=>betaHomeSnapshot());
   assert.equal(after.house,2);assert.equal(after.fence,before.fence);
-  assert.equal(after.stars,200-HOUSE_STAGES[2].c);
+  const repairCost=await page.evaluate(()=>HOUSE_STAGES[2].c);
+  assert.equal(after.stars,200-repairCost);
   assert.match(await page.locator('#playBtn').innerText(),/Играть: уровень 5/);
   assert.equal(await page.locator('#levels .lv').count(),50);
   await page.locator('#playBtn').click();assert.equal(await page.locator('#game').isVisible(),true);
