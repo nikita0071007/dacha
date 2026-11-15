@@ -1,38 +1,37 @@
-const {chromium}=require('playwright'),assert=require('node:assert/strict'),path=require('node:path'),fs=require('node:fs');
-const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(process.argv[3]||'beta/verify-out');
-fs.mkdirSync(out,{recursive:true});
+const {chromium}=require('playwright'),fs=require('node:fs'),assert=require('node:assert/strict'),path=require('node:path');
+const file=path.resolve(process.argv[2]||'beta/index.html'),out=path.resolve(process.argv[3]||'beta/verify-out');fs.mkdirSync(out,{recursive:true});
 (async()=>{const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
-for(const [width,height] of [[360,640],[390,800],[412,915]]){
- const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true,deviceScaleFactor:1,reducedMotion:'reduce'});
- await context.addInitScript(()=>localStorage.setItem('dacha3v2',JSON.stringify({who:'girl',visitorName:'QA',level:2,lives:5,stars:300,bought:[]})));
- const page=await context.newPage(),errors=[];
- page.on('pageerror',e=>errors.push(e.message)); await page.goto('file://'+file);
- await page.locator('#spPlay').waitFor({state:'visible',timeout:12000});await page.locator('#spPlay').click();
- await page.evaluate(()=>{try{closeModal()}catch(e){};renderHome()});
- const home=page.locator('#home');assert.equal(await home.isVisible(),true);
- assert.match(await home.locator('.beta-home-banner').innerText(),/Бабушкина[\s\S]*дача 2\.0/);
- assert.equal(await page.locator('#levels .lv').count(),50);
- assert.equal(await page.locator('#betaHouseUpgrade').isDisabled(),true);
- assert.equal(await page.locator('#betaFenceUpgrade').isDisabled(),true);
- const style=await home.evaluate(x=>getComputedStyle(x).backgroundImage);
- assert.match(style,/data:image\/webp/,'Approved background required');
- assert.equal(await page.locator('#scene .garden-landscape').isVisible(),false);
- assert.equal(await page.locator('#scene .it[data-item="house"]').isVisible(),false);
- await page.screenshot({path:path.join(out,'beta-B-'+width+'x'+height+'-home.png')});
- // No new construction logic. Existing house/fence upgrades must stay independent.
- await page.evaluate(()=>{S.bought=['house','fence'];S.houseStage=1;S.fenceStage=1;S.stars=300;renderHome()});
- let st=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
- await page.locator('#betaHouseUpgrade').click();
- let after=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
- assert.equal(after.h,st.h+1);assert.equal(after.f,st.f);assert.equal(after.level,st.level);assert.ok(after.star<st.star,'house renovation must use existing star cost');
- await page.locator('#betaFenceUpgrade').click();
- let next=await page.evaluate(()=>({h:houseStage(),f:fenceStage(),level:S.level,star:S.stars}));
- assert.equal(next.h,after.h);assert.equal(next.f,after.f+1);assert.equal(next.level,st.level);
- assert.equal(await page.locator('#scene').getAttribute('data-house-stage'),String(next.h));
- assert.equal(await page.locator('#scene').getAttribute('data-fence-stage'),String(next.f));
- await page.locator('#playBtn').click();
- assert.equal(await page.locator('#game').isVisible(),true);
- assert.deepEqual(errors,[],errors.join('; '));
- console.log('PASS B home '+width+'x'+height+': art, buttons, independent repair logic, 50 levels');
- await context.close();
-}await browser.close();})().catch(e=>{console.error(e);process.exit(1)});
+ for(const [w,h] of [[360,640],[390,800],[412,915]]){
+  const ctx=await browser.newContext({viewport:{width:w,height:h},hasTouch:true,isMobile:true,deviceScaleFactor:1,reducedMotion:'reduce'});
+  await ctx.addInitScript(()=>localStorage.setItem('dacha3v2',JSON.stringify({who:'girl',visitorName:'QA',level:4,stars:200,lives:5,pets:['cat','dog'],bought:['house','fence'],houseStage:1,fenceStage:1})));
+  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('file://'+file);
+  await page.locator('#spPlay').click();await page.evaluate(()=>{try{closeModal()}catch(e){};renderHome();});
+  for(const [hs,fs,expectedHouse,expectedFence,label] of [[1,1,'ruined','ruined','ruined'],[2,2,'half','half','half'],[5,4,'ready','ready','ready'],[5,1,'ready','ruined','mixed']]){
+   const state=await page.evaluate(([house,fence])=>{S.houseStage=house;S.fenceStage=fence;renderHome();return window.betaHomeSnapshot();},[hs,fs]);
+   assert.equal(state.houseVisual,expectedHouse);assert.equal(state.fenceVisual,expectedFence);
+   const photo=await page.locator('#home').evaluate(el=>getComputedStyle(el).backgroundImage);
+   assert.match(photo,expectedHouse==='ready'?/data:image\/webp/:new RegExp('home-'+expectedHouse+'\\.webp'));
+   const visibleSvg=await page.locator('#scene .it[data-item="house"] svg').evaluate(el=>el.getBoundingClientRect().height);
+   assert.equal(visibleSvg,0,'no code-drawn house visible');
+   const sizes=await page.evaluate(()=>({task:document.querySelector('#task').getBoundingClientRect().right,window:innerWidth,header:document.querySelector('.top').getBoundingClientRect().height}));
+   assert.ok(sizes.task<=sizes.window+1,'task overflow');
+   assert.ok(sizes.header<65,'home header wraps onto multiple rows');
+   await page.screenshot({path:path.join(out,'home-B-'+label+'-'+w+'x'+h+'.png')});
+  }
+  // Real repair click must retain old cost/state and leave fence progress untouched.
+  const before=await page.evaluate(()=>{S.houseStage=1;S.fenceStage=1;S.stars=200;renderHome();return betaHomeSnapshot();});
+  await page.locator('#betaHouseStage').click();
+  const after=await page.evaluate(()=>betaHomeSnapshot());
+  assert.equal(after.house,2);assert.equal(after.fence,before.fence);
+  const repairCost=await page.evaluate(()=>HOUSE_STAGES[2].c);
+  assert.equal(after.stars,200-repairCost);
+  assert.match(await page.locator('#playBtn').innerText(),/Играть: уровень 5/);
+  assert.equal(await page.locator('#levels .lv').count(),50);
+  await page.evaluate(()=>{if(!document.querySelector('#modal').hidden)closeModal();});
+  await page.locator('#playBtn').click();assert.equal(await page.locator('#game').isVisible(),true);
+  assert.deepEqual(errors,[],'browser errors');
+  console.log('PASS point B '+w+'x'+h+' all 3 states, separate fence, costs, play and levels');
+  await ctx.close();
+ }
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
