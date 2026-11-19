@@ -18,8 +18,14 @@ for(const [w,h] of [[360,640],[390,800],[412,915]]){
  assert.notEqual(shadow,'none','ground shadow present');
  await page.evaluate(()=>document.getElementById('granny').classList.add('walk'));
  await page.waitForTimeout(200);
- const walk=await page.evaluate(()=>getComputedStyle(document.querySelector('#granny .mimg')).animationName);
- assert.match(walk,/mlStep/,'walk step animation active');
+ await page.waitForTimeout(1700);
+ const sh=await page.evaluate(()=>{const d=document.querySelector('#granny .ml-sheet');const i=document.querySelector('#granny .mimg');return d?{disp:getComputedStyle(d).display,w:d.getBoundingClientRect().width,h:d.getBoundingClientRect().height,anim:getComputedStyle(d).animationName,img:getComputedStyle(i).display,bg:getComputedStyle(d).backgroundImage}:null});
+ assert.ok(sh,'sprite sheet element built');
+ assert.equal(sh.disp,'block','walk sheet shown while walking');
+ assert.equal(sh.img,'none','still image hidden while sheet plays');
+ assert.ok(sh.w>20&&sh.h>40,'sheet has size '+JSON.stringify(sh));
+ assert.match(sh.anim,/mlSheet/,'sheet animation runs');
+ assert.match(sh.bg,/marina-walk/,'sheet image set');
  await page.evaluate(()=>document.getElementById('granny').classList.remove('walk'));
  await page.evaluate(()=>document.getElementById('granny').click());
  await page.waitForTimeout(100);
