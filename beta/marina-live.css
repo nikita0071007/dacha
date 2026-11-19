@@ -1,0 +1,25 @@
+/* Marina live: volume + life on the approved sprite. No redraw; transforms and a ground shadow only. */
+#granny{--ml-shadow:.6}
+#granny .gf{position:relative;transform-origin:50% 100%}
+#granny .gf::before{content:"";position:absolute;left:50%;bottom:-5px;width:86%;height:13px;transform:translateX(-50%);
+ border-radius:50%;background:radial-gradient(ellipse at center,rgba(30,45,20,var(--ml-shadow)) 0%,rgba(30,45,20,0) 70%);z-index:-1;pointer-events:none}
+#granny .mimg{transform-origin:50% 100%;will-change:transform}
+/* idle: breathing and a slight sway (replaces the old 1px lift) */
+#granny:not(.walk):not(.ml-hop) .mimg{animation:mlBreathe 3.2s ease-in-out infinite,mlSway 6.4s ease-in-out infinite}
+@keyframes mlBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,1.022)}}
+@keyframes mlSway{0%,100%{rotate:0deg}30%{rotate:-.7deg}70%{rotate:.7deg}}
+/* walking: step bob with lean and squash, shadow follows the step */
+#granny.walk .mimg{animation:mlStep .46s ease-in-out infinite}
+@keyframes mlStep{0%,100%{transform:translateY(0) rotate(-2.2deg) scale(1.02,.98)}50%{transform:translateY(-4px) rotate(2.2deg) scale(.99,1.02)}}
+#granny.walk .gf::before{animation:mlStepShadow .46s ease-in-out infinite}
+@keyframes mlStepShadow{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(.82);opacity:.8}}
+/* tap: hop with squash and stretch */
+#granny.ml-hop .mimg{animation:mlHop .55s cubic-bezier(.3,.7,.4,1) 1}
+@keyframes mlHop{0%{transform:scale(1.06,.92)}30%{transform:translateY(-9px) scale(.95,1.07)}60%{transform:translateY(0) scale(1.05,.94)}100%{transform:scale(1,1)}}
+/* sprite sheet walk (optional): a sheet declared in window.MARINA_WALK_SHEET replaces the image while walking */
+#granny .ml-sheet{display:none;margin:0 auto;background-repeat:no-repeat;image-rendering:auto;pointer-events:none}
+#granny.walk.ml-has-sheet .ml-sheet{display:block}
+#granny.walk.ml-has-sheet .mimg{display:none!important}
+#granny.walk.ml-has-sheet .gf::before{animation:none}
+@keyframes mlSheet{from{background-position-x:0}to{background-position-x:var(--ml-sheet-w)}}
+@media (prefers-reduced-motion:reduce){#granny .mimg,#granny .gf::before{animation:none!important}}
