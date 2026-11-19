@@ -22,8 +22,8 @@ for(const [w,h] of [[360,640],[390,800],[412,915]]){
  let before=await p.evaluate(()=>G.moves);
  const step=await p.evaluate(async()=>{
   const B=G.board;
-  for(let r=0;r<N;r++)for(let c=0;c<N;c++)for(const [dr,dc] of [[0,1],[1,0]]){
-   let y=r+dr,x=c+dc;if(y>=N||x>=N)continue;
+  for(let r=0;r<B.length;r++)for(let c=0;c<N;c++)for(const [dr,dc] of [[0,1],[1,0]]){
+   let y=r+dr,x=c+dc;if(y>=B.length||x>=N)continue;
    if(!B[r][c]||!B[y][x]||isBox(B[r][c])||isBox(B[y][x]))continue;
    swapIn(B,r,c,y,x);const match=findRuns(B).length>0;swapIn(B,y,x,r,c);
    if(match){await onTap([r,c]);await onTap([y,x]);return {from:[r,c],to:[y,x]};}

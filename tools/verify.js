@@ -97,8 +97,8 @@ const src = fs.readFileSync(file, 'utf8');
           for (let g = 0; g < 60; g++) {
             if (goalsDone()) return 'win'; if (G.moves <= 0) return 'lose';
             const B = G.board; let best = null;
-            for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) for (const [dr, dc] of [[0, 1], [1, 0]]) {
-              const y = r + dr, x = c + dc; if (y >= N || x >= N) continue; const A = B[r][c], T = B[y][x]; if (!A || !T || isBox(A) || isBox(T)) continue;
+            for (let r = 0; r < B.length; r++) for (let c = 0; c < N; c++) for (const [dr, dc] of [[0, 1], [1, 0]]) {
+              const y = r + dr, x = c + dc; if (y >= B.length || x >= N) continue; const A = B[r][c], T = B[y][x]; if (!A || !T || isBox(A) || isBox(T)) continue;
               let sc = 0; if (A.s === 'sun' || T.s === 'sun') sc = 30; else { swapIn(B, r, c, y, x); const runs = findRuns(B); swapIn(B, y, x, r, c); if (!runs.length) continue; for (const run of runs) { sc += run.cells.length * 2; for (const [rr, cc] of run.cells) { const t = B[rr][cc]; if (t && G.goals[t.t] > 0) sc += 6; if (G.weeds && G.weeds.has(rr * N + cc)) sc += 8;
                   for(const [dy,dx] of [[0,1],[1,0],[0,-1],[-1,0]]){
                     const yy=rr+dy,xx=cc+dx;if(yy<0||yy>=N||xx<0||xx>=N)continue;

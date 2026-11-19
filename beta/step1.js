@@ -28,7 +28,7 @@
   const blocks=B=>B.flat().filter(t=>t&&t.s==='box'&&!t.kind).length;
   const addObstacle=(B,kind)=>{
     for(let k=0;k<120;k++){
-      const r=kind==='rot'?1+rnd(N-2):rnd(N),c=rnd(N);
+      const r=kind==='rot'?1+rnd(ROWS-2):rnd(ROWS),c=rnd(N);
       if(B[r][c].s==='box')continue;
       const tile=makeTile(-3);
       tile.s='box';tile.kind=kind;tile.hp=kind==='lock'?3:Infinity;
@@ -52,8 +52,8 @@
     if(!G.board.some(row=>row.some(t=>t&&t.kind==='rot')))return ORIGINAL.gravity();
     const B=G.board;
     for(let c=0;c<N;c++){
-      let bottom=N-1;
-      for(let cut=N-1;cut>=-1;cut--){
+      let bottom=ROWS-1;
+      for(let cut=ROWS-1;cut>=-1;cut--){
         if(cut!==-1&&(!B[cut][c]||B[cut][c].kind!=='rot'))continue;
         let w=bottom;
         for(let r=bottom;r>cut;r--)if(B[r][c]){
